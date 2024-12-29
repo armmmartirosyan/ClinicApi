@@ -1,4 +1,6 @@
 using Clinic.Api.Extensions;
+using Clinic.Core.Domain;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +11,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddServices();
+builder.Services.AddServices().AddDbContext<ClinicDbContext>(options =>
+{
+    options.UseMySql(builder.Configuration.GetConnectionString("MySQLServer"),
+    new MySqlServerVersion(new Version(8, 0, 40)));
+}).AddRepositories();
 
 var app = builder.Build();
 

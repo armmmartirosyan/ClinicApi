@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Clinic.Core\Clinic.Core.csproj" />
+  </ItemGroup>
+
 </Project>

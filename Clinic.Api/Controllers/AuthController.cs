@@ -1,24 +1,17 @@
 ﻿using Clinic.Core.Interfaces;
 using Clinic.Core.Models.Request;
-using Clinic.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic.Api.Controllers;
 
 [ApiController]
 [Route("[controller]/[action]")]
-public class AuthController : ControllerBase
+public class AuthController(IAuthService authService) : ControllerBase
 {
-    private IAuthService _authService;
-    public AuthController(IAuthService authService)
-    {
-        _authService = authService;
-    }
-
     [HttpPost]
-    public IActionResult SignIn(SignInRequest request)
+    public async Task<IActionResult> SignIn(SignInRequest request)
     {
-        _authService.SignIn(request);
+        await authService.SignIn(request);
         return Ok();
     }
 }

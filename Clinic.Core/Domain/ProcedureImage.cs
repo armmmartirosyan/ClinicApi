@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Clinic.Api.Models;
+namespace Clinic.Core.Domain;
 
 public partial class ProcedureImage
 {

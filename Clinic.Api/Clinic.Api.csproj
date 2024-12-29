@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Clinic.Core\Clinic.Core.csproj" />
+    <ProjectReference Include="..\Clinic.Infrastructure\Clinic.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

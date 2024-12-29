@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
 
-namespace Clinic.Api.Models;
+namespace Clinic.Core.Domain;
 
 public partial class ClinicDbContext : DbContext
 {

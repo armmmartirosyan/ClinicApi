@@ -4,5 +4,5 @@ namespace Clinic.Core.Interfaces;
 
 public interface IAuthService
 {
-    void SignIn(SignInRequest request);
+    Task SignIn(SignInRequest request);
 }
