@@ -7,4 +7,5 @@ namespace Clinic.Core.Interfaces.Services;
 public interface IAuthService
 {
     Task<SignInResponse> SignInAsync(SignInRequest request);
+    Task<RegisterResponse> RegisterAsync(RegisterRequest request);
 }

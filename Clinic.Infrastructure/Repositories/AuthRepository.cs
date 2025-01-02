@@ -8,10 +8,15 @@ public class AuthRepository(ClinicDbContext dbContext) : IAuthRepository
 {
     public async Task<User> GetUserByEmailAsync(string email)
     {
-        // JUST EXAMPLE
-        //await dbContext.UserTypes.AddAsync(new UserType() { Name = "Test" });
-        //await dbContext.SaveChangesAsync();
-
         return await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+    }
+
+    public async Task<long> AddUserAsync(User user)
+    {
+        await dbContext.Users.AddAsync(user);
+        await dbContext.SaveChangesAsync();
+        User currentUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
+
+        return currentUser.Id;
     }
 }
