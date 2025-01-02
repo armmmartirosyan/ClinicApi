@@ -1,6 +1,8 @@
-﻿namespace Clinic.Core.Interfaces.Repositories;
+﻿using Clinic.Core.Domain;
+
+namespace Clinic.Core.Interfaces.Repositories;
 
 public interface IAuthRepository
 {
-    public Task Login();
+    Task<User> GetUserByEmailAsync(string email);
 }

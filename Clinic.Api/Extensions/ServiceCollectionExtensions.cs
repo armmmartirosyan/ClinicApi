@@ -1,5 +1,5 @@
-﻿using Clinic.Core.Interfaces;
-using Clinic.Core.Interfaces.Repositories;
+﻿using Clinic.Core.Interfaces.Repositories;
+using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Services;
 using Clinic.Infrastructure.Repositories;
 
