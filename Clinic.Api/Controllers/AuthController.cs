@@ -1,5 +1,6 @@
 ﻿using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.Request;
+using Clinic.Core.Models.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic.Api.Controllers;
@@ -13,12 +14,23 @@ public class AuthController(IAuthService authService) : ControllerBase
     {
         try
         {
-            var response = await authService.SignInAsync(request);
-            return Ok(response);
+            string token = await authService.SignInAsync(request);
+
+            return Ok(new Response()
+            {
+                Data = token,
+                Message = "",
+                Success = true
+            });
         }
         catch (UnauthorizedAccessException ex)
         {
-            return Unauthorized(new { message = ex.Message });
+            return Unauthorized(new Response()
+            {
+                Data = null,
+                Message = ex.Message,
+                Success = false
+            });
         }
     }
 
@@ -27,12 +39,23 @@ public class AuthController(IAuthService authService) : ControllerBase
     {
         try
         {
-            var response = await authService.RegisterAsync(request);
-            return Ok(response);
+            long userId = await authService.RegisterAsync(request);
+
+            return Ok(new Response()
+            {
+                Data = userId,
+                Message = "Registration successful.",
+                Success = true
+            });
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidDataException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return BadRequest(new Response()
+            {
+                Data = null,
+                Message = ex.Message,
+                Success = false
+            });
         }
     }
 }

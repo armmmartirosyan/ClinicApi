@@ -19,4 +19,15 @@ public class AuthRepository(ClinicDbContext dbContext) : IAuthRepository
 
         return currentUser.Id;
     }
+
+    public async Task<bool> IsValidUserTypeIdAsync(int userTypeId)
+    {
+        return await dbContext.UserTypes.AnyAsync(ut => ut.Id == userTypeId);
+    }
+
+    //public async Task<bool> IsValidSpecializationIdAsync(int specializationId)
+    //{
+    //    return await dbContext.Specializations
+    //        .AnyAsync(s => s.Id == specializationId);
+    //}
 }

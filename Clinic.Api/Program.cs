@@ -15,7 +15,7 @@ builder.Services.AddServices().AddDbContext<ClinicDbContext>(options =>
 {
     options.UseMySql(builder.Configuration.GetConnectionString("MySQLServer"),
     new MySqlServerVersion(new Version(8, 0, 40)));
-}).AddRepositories();
+}).AddRepositories().AddValidators();
 
 var app = builder.Build();
 

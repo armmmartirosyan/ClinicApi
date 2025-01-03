@@ -10,4 +10,8 @@
     <ProjectReference Include="..\Clinic.Core\Clinic.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="8.6.3" />
+  </ItemGroup>
+
 </Project>

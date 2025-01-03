@@ -3,12 +3,14 @@ using Clinic.Core.Interfaces.Repositories;
 using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.Request;
 using Clinic.Core.Models.Response;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace Clinic.Core.Services;
-
-public class AuthService(IAuthRepository authRepository) : IAuthService
+ 
+public class AuthService(IAuthRepository authRepository, AbstractValidator<User> userValidator) : IAuthService
 {
-    public async Task<SignInResponse> SignInAsync(SignInRequest request)
+    public async Task<string> SignInAsync(SignInRequest request)
     {
         var user = await authRepository.GetUserByEmailAsync(request.Email);
 
@@ -20,10 +22,7 @@ public class AuthService(IAuthRepository authRepository) : IAuthService
         //TODO: Improve the response.
         var token = "mock-jwt-token";
 
-        return new SignInResponse
-        {
-            Token = token,
-        };
+        return token;
     }
 
     private bool VerifyPassword(string password, string passwordHash)
@@ -36,51 +35,40 @@ public class AuthService(IAuthRepository authRepository) : IAuthService
         return false;
     }
 
-    public async Task<RegisterResponse> RegisterAsync(RegisterRequest request)
+    public async Task<long> RegisterAsync(RegisterRequest request)
     {
         var existingUser = await authRepository.GetUserByEmailAsync(request.Email);
         if (existingUser != null)
-        {
-            throw new InvalidOperationException("Email is already registered.");
+        { 
+            throw new InvalidDataException("Email is already registered.");
         }
-
-        //TODO: Use FluentValidation
-        //TODO: Use Multilingual Support
-
-        //TODO: Check for strong password
-        //TODO: Validate first name, last name
-        //TODO: Validate email
-        //TODO: Validate phone
-        //TODO: Validate birthdate
-        //TODO: Validate typeid
-        //TODO: Validate specialization
-
-        var passwordHash = HashPassword(request.Password);
 
         var user = new User
         {
             FirstName = request.FirstName,
             LastName = request.LastName,
             Email = request.Email,
-            Password = passwordHash,
+            Password = request.Password,
             Phone = request.Phone,
             TypesId = request.TypesId,
             BirthDate = request.BirthDate,
         };
 
-        var userId = await authRepository.AddUserAsync(user);
+        ValidationResult result = userValidator.Validate(user);
 
-        foreach (int specialization in request.Specializations)
+        if (!result.IsValid)
         {
-            Console.WriteLine(specialization);
-            //TODO: Add specialization logic
+            throw new InvalidDataException(result.Errors[0].ErrorMessage);
         }
 
-        return new RegisterResponse
-        {
-            UserId = userId,
-            Message = "Registration successful."
-        };
+        user.Password = HashPassword(request.Password);
+
+        var userId = await authRepository.AddUserAsync(user);
+
+        Console.WriteLine(request.Specializations.ToString());
+        //TODO: Add specialization logic
+
+        return userId;
     }
 
     private string HashPassword(string password)
