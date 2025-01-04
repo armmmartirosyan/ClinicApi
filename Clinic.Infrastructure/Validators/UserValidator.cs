@@ -11,21 +11,19 @@ public class UserValidator : AbstractValidator<User>
     public UserValidator(IAuthRepository authRepository)
     {
         _authRepository = authRepository;
+        CascadeMode = CascadeMode.StopOnFirstFailure;
 
         RuleFor(u => u.FirstName)
-            .Cascade(CascadeMode.StopOnFirstFailure)
             .NotEmpty().WithMessage("{PropertyName} is empty")
             .Length(2, 50).WithMessage("Length of {PropertyName} invalid")
             .Must(BeAValidName).WithMessage("{PropertyName} contains invalid characters");
 
         RuleFor(u => u.LastName)
-            .Cascade(CascadeMode.StopOnFirstFailure)
             .NotEmpty().WithMessage("{PropertyName} is empty")
             .Length(2, 50).WithMessage("Length of {PropertyName} invalid")
             .Must(BeAValidName).WithMessage("{PropertyName} contains invalid characters");
 
         RuleFor(u => u.Password)
-            .Cascade(CascadeMode.StopOnFirstFailure)
             .NotEmpty().WithMessage("Password is required.")
             .MinimumLength(8).WithMessage("Password must be at least 8 characters long.")
             .Must(ContainUppercase).WithMessage("Password must contain at least one uppercase letter.")
@@ -34,29 +32,24 @@ public class UserValidator : AbstractValidator<User>
             .Must(ContainSpecialCharacter).WithMessage("Password must contain at least one special character.");
 
         RuleFor(u => u.Email)
-            .Cascade(CascadeMode.StopOnFirstFailure)
             .NotEmpty().WithMessage("Email is required.")
             .Matches(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
             .WithMessage("Email is invalid.");
 
         RuleFor(u => u.Phone)
-            .Cascade(CascadeMode.StopOnFirstFailure)
             .NotEmpty().WithMessage("Phone number is required.")
             .Matches(@"^\+\d{11,15}$").WithMessage("Invalid phone number.");
 
         RuleFor(u => u.BirthDate)
-           .Cascade(CascadeMode.StopOnFirstFailure)
            .NotEmpty().WithMessage("Birthdate is required.")
            .Must(BeAValidDate).WithMessage("Birthdate must be a valid date.")
            .Must(NotBeInTheFuture).WithMessage("Birthdate cannot be in the future.");
 
         RuleFor(u => u.TypesId)
-           .Cascade(CascadeMode.StopOnFirstFailure)
            .NotEmpty().WithMessage("UserTypeId is required.")
            .MustAsync(ValidateUserTypeId).WithMessage("UserTypeId is invalid.");
 
         //RuleFor(x => x.SpecializationIds)
-        //    .Cascade(CascadeMode.StopOnFirstFailure)
         //    .NotEmpty().WithMessage("Specializations are required.")
         //    .MustAsync(ValidateSpecializationIds).WithMessage("One or more specialization IDs are invalid.");
     }
