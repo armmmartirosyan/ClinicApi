@@ -15,14 +15,16 @@ public static class ServiceCollectionExtensions
     {
         return services
             .AddScoped<IAuthService, AuthService>()
-            .AddScoped<IVisitService, VisitService>();
+            .AddScoped<IVisitService, VisitService>()
+            .AddScoped<IWeekDayScheduleService, WeekDayScheduleService>();
     }
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         return services
             .AddScoped<IAuthRepository, AuthRepository>()
-            .AddScoped<IVisitRepository, VisitRepository>();
+            .AddScoped<IVisitRepository, VisitRepository>()
+            .AddScoped<IWeekDayScheduleRepository, WeekDayScheduleRepository>();
     } 
 
     public static IServiceCollection AddValidators(this IServiceCollection services)
@@ -30,6 +32,8 @@ public static class ServiceCollectionExtensions
         return services
             .AddScoped<AbstractValidator<User>, UserValidator>()
             .AddScoped<AbstractValidator<AddVisitRequest>, AddVisitValidator>()
-            .AddScoped<AbstractValidator<UpdateVisitRequest>, UpdateVisitValidator>();
+            .AddScoped<AbstractValidator<UpdateVisitRequest>, UpdateVisitValidator>()
+            .AddScoped<AbstractValidator<CreateWeekDayScheduleRequest>, CreateWeekDayScheduleValidator>()
+            .AddScoped<AbstractValidator<UpdateWeekDayScheduleRequest>, UpdateWeekDayScheduleValidator>();
     }
 }
