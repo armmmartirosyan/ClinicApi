@@ -34,11 +34,13 @@ public class UserValidator : AbstractValidator<User>
         RuleFor(u => u.Email)
             .NotEmpty().WithMessage("Email is required.")
             .Matches(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-            .WithMessage("Email is invalid.");
+            .WithMessage("Email is invalid.")
+            .MustAsync(NotBeDuplicatedEmail).WithMessage("Email duplicated.");
 
         RuleFor(u => u.Phone)
             .NotEmpty().WithMessage("Phone number is required.")
-            .Matches(@"^\+\d{11,15}$").WithMessage("Invalid phone number.");
+            .Matches(@"^\+\d{11,15}$").WithMessage("Invalid phone number.")
+            .MustAsync(NotBeDuplicatedPhone).WithMessage("Phone number duplicated.");
 
         RuleFor(u => u.BirthDate)
            .NotEmpty().WithMessage("Birthdate is required.")
@@ -95,6 +97,16 @@ public class UserValidator : AbstractValidator<User>
     private async Task<bool> ValidateUserTypeId(int userTypeId, CancellationToken cancellationToken)
     {
         return await _authRepository.IsValidUserTypeIdAsync(userTypeId);
+    }
+
+    private async Task<bool> NotBeDuplicatedPhone(string phone, CancellationToken cancellationToken)
+    {
+        return await _authRepository.IsPhoneDuplicated(phone) == false;
+    }
+
+    private async Task<bool> NotBeDuplicatedEmail(string email, CancellationToken cancellationToken)
+    {
+        return await _authRepository.IsEmailDuplicated(email) == false;
     }
 
     //private async Task<bool> ValidateSpecializationIds(List<int> specializationIds, CancellationToken cancellationToken)

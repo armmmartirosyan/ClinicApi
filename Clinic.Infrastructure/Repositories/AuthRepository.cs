@@ -25,6 +25,16 @@ public class AuthRepository(ClinicDbContext dbContext) : IAuthRepository
         return await dbContext.UserTypes.AnyAsync(ut => ut.Id == userTypeId);
     }
 
+    public async Task<bool> IsPhoneDuplicated(string phone)
+    {
+        return await dbContext.Users.AnyAsync(ut => ut.Phone == phone);
+    }
+
+    public async Task<bool> IsEmailDuplicated(string email)
+    {
+        return await dbContext.Users.AnyAsync(ut => ut.Email == email);
+    }
+
     //public async Task<bool> IsValidSpecializationIdAsync(int specializationId)
     //{
     //    return await dbContext.Specializations

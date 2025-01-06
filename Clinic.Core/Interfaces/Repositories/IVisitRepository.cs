@@ -12,4 +12,5 @@ public interface IVisitRepository
     Task<bool> IsValidUserIdAsync(long patientId);
     Task<VisitStatus> GetVisitStatusAsync(string name);
     Task<bool> IsValidStatusIdAsync(int? statusId);
+    Task<bool> IsValidDoctorId(long doctorId);
 }

@@ -35,7 +35,7 @@ public class WeekDayScheduleController(IWeekDayScheduleService weekDayScheduleSe
     }
 
     [HttpGet("{doctorId}")]
-    public async Task<IActionResult> GetSchedulesByDoctorId(long doctorId)
+    public async Task<IActionResult> GetByDoctorId(long doctorId)
     {
         var schedules = await weekDayScheduleService.GetSchedulesByDoctorAsync(doctorId);
 
@@ -48,7 +48,7 @@ public class WeekDayScheduleController(IWeekDayScheduleService weekDayScheduleSe
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetSchedulesById(long id)
+    public async Task<IActionResult> GetById(long id)
     {
         var schedule = await weekDayScheduleService.GetByIdAsync(id);
 

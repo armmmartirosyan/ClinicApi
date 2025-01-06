@@ -2,7 +2,6 @@
 using Clinic.Core.Interfaces.Repositories;
 using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.Request;
-using Clinic.Core.Models.Response;
 using FluentValidation;
 using FluentValidation.Results;
 
@@ -37,12 +36,6 @@ public class AuthService(IAuthRepository authRepository, AbstractValidator<User>
 
     public async Task<long> RegisterAsync(RegisterRequest request)
     {
-        var existingUser = await authRepository.GetUserByEmailAsync(request.Email);
-        if (existingUser != null)
-        { 
-            throw new InvalidDataException("Email is already registered.");
-        }
-
         var user = new User
         {
             FirstName = request.FirstName,

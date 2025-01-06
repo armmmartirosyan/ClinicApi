@@ -44,6 +44,13 @@ public class VisitRepository(ClinicDbContext dbContext) : IVisitRepository
         return await dbContext.Users.AnyAsync(ut => ut.Id == userId);
     }
 
+    public async Task<bool> IsValidDoctorId(long doctorId)
+    {
+        var doctorType = await dbContext.UserTypes.FirstOrDefaultAsync(t => t.Name == "Doctor");
+
+        return await dbContext.Users.AnyAsync(ut => ut.Id == doctorId && ut.TypesId == doctorType.Id);
+    }
+
     public async Task<bool> IsValidStatusIdAsync(int? statusId)
     {
         return await dbContext.VisitStatuses.AnyAsync(vs => vs.Id == statusId);

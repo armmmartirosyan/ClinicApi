@@ -10,7 +10,7 @@ namespace Clinic.Api.Controllers;
 public class VisitController(IVisitService visitService) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> AddVisit([FromBody] AddVisitRequest request)
+    public async Task<IActionResult> Add([FromBody] AddVisitRequest request)
     {
         try
         {
@@ -35,7 +35,7 @@ public class VisitController(IVisitService visitService) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllVisits()
+    public async Task<IActionResult> GetAll()
     {
         var visits = await visitService.GetAllVisitsAsync();
         
@@ -48,7 +48,7 @@ public class VisitController(IVisitService visitService) : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetVisitById(long id)
+    public async Task<IActionResult> GetById(long id)
     {
         var visit = await visitService.GetVisitByIdAsync(id);
         
@@ -71,7 +71,7 @@ public class VisitController(IVisitService visitService) : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateVisit(long id, [FromBody] UpdateVisitRequest request)
+    public async Task<IActionResult> Update(long id, [FromBody] UpdateVisitRequest request)
     {
         try
         {
@@ -96,7 +96,7 @@ public class VisitController(IVisitService visitService) : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteVisit(long id)
+    public async Task<IActionResult> Delete(long id)
     {
         var success = await visitService.DeleteVisitAsync(id);
 

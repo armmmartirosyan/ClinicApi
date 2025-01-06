@@ -23,13 +23,6 @@ public class WeekDayScheduleService
             throw new InvalidDataException(validationResult.Errors[0].ErrorMessage);
         }
 
-        var existingSchedule = await weekDayScheduleRepository.GetSchedulesByWeekDayAsync(request.WeekDayId);
-
-        if (existingSchedule != null)
-        {
-            throw new InvalidDataException("The schedule for this day is already exists.");
-        }
-
         var schedule = new WeekDaySchedule
         {
             StartTime = request.StartTime,

@@ -9,6 +9,7 @@ public class WeekDayScheduleRepository(ClinicDbContext dbContext) : IWeekDaySche
     public async Task<long> CreateAsync(WeekDaySchedule schedule)
     {
         var res = await dbContext.WeekDaySchedules.AddAsync(schedule);
+        await dbContext.SaveChangesAsync();
 
         return res.Entity.Id;
     }
@@ -19,12 +20,6 @@ public class WeekDayScheduleRepository(ClinicDbContext dbContext) : IWeekDaySche
             .Where(s => s.DoctorId == doctorId)
             .Include(s => s.WeekDay)
             .ToListAsync();
-    }
-
-    public async Task<WeekDaySchedule> GetSchedulesByWeekDayAsync(int dayId)
-    {
-        return await dbContext.WeekDaySchedules
-            .FirstOrDefaultAsync(s => s.WeekDayId == dayId);
     }
 
     public async Task<WeekDaySchedule> GetByIdAsync(long id)
@@ -59,5 +54,12 @@ public class WeekDayScheduleRepository(ClinicDbContext dbContext) : IWeekDaySche
     public async Task<bool> IsValidWeekDayIdAsync(int weekDayId)
     {
         return await dbContext.WeekDays.AnyAsync(ut => ut.Id == weekDayId);
+    }
+
+    public async Task<bool> WeekDayNotRegistered(int weekDayId, long doctorId)
+    {
+        bool weekDayScheduleExists = await dbContext.WeekDaySchedules.AnyAsync(w => w.WeekDayId == weekDayId && w.DoctorId == doctorId);
+
+        return !weekDayScheduleExists;
     }
 }
