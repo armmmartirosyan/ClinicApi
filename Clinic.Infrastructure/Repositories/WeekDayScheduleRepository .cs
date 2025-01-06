@@ -16,17 +16,32 @@ public class WeekDayScheduleRepository(ClinicDbContext dbContext) : IWeekDaySche
 
     public async Task<IEnumerable<WeekDaySchedule>> GetSchedulesByDoctorAsync(long doctorId)
     {
-        return await dbContext.WeekDaySchedules
-            .Where(s => s.DoctorId == doctorId)
-            .Include(s => s.WeekDay)
-            .ToListAsync();
+        return await dbContext.WeekDaySchedules.Where(s => s.DoctorId == doctorId).Join(dbContext.WeekDaySchedules, wds => wds.WeekDayId, wd => wd.WeekDayId, (wds, wd) => new WeekDaySchedule
+        {
+            Id = wds.Id,
+            StartTime = wds.StartTime,
+            EndTime = wds.EndTime,
+            BreakEndTime = wds.BreakEndTime,
+            BreakStartTime = wds.BreakStartTime,
+            DoctorId = wds.DoctorId,
+            WeekDay = wds.WeekDay
+
+        }).ToListAsync();
     }
 
     public async Task<WeekDaySchedule> GetByIdAsync(long id)
     {
-        return await dbContext.WeekDaySchedules
-            .Include(s => s.WeekDay)
-            .FirstOrDefaultAsync(s => s.Id == id);
+        return await dbContext.WeekDaySchedules.Join(dbContext.WeekDaySchedules, wds => wds.WeekDayId, wd => wd.WeekDayId, (wds, wd) => new WeekDaySchedule
+        {
+            Id = wds.Id,
+            StartTime = wds.StartTime,
+            EndTime = wds.EndTime,
+            BreakEndTime = wds.BreakEndTime,
+            BreakStartTime = wds.BreakStartTime,
+            DoctorId = wds.DoctorId,
+            WeekDay = wds.WeekDay
+
+        }).FirstAsync(s => s.Id == id);
     }
 
     public async Task<bool> UpdateAsync(WeekDaySchedule schedule)
