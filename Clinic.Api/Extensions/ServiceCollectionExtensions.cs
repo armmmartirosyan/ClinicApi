@@ -16,7 +16,8 @@ public static class ServiceCollectionExtensions
         return services
             .AddScoped<IAuthService, AuthService>()
             .AddScoped<IVisitService, VisitService>()
-            .AddScoped<IWeekDayScheduleService, WeekDayScheduleService>();
+            .AddScoped<IWeekDayScheduleService, WeekDayScheduleService>()
+            .AddScoped<INotWorkingDaysService, NotWorkingDaysService>();
     }
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)
@@ -24,7 +25,8 @@ public static class ServiceCollectionExtensions
         return services
             .AddScoped<IAuthRepository, AuthRepository>()
             .AddScoped<IVisitRepository, VisitRepository>()
-            .AddScoped<IWeekDayScheduleRepository, WeekDayScheduleRepository>();
+            .AddScoped<IWeekDayScheduleRepository, WeekDayScheduleRepository>()
+            .AddScoped<INotWorkingDaysRepository, NotWorkingDaysRepository>();
     } 
 
     public static IServiceCollection AddValidators(this IServiceCollection services)
@@ -34,6 +36,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<AbstractValidator<AddVisitRequest>, AddVisitValidator>()
             .AddScoped<AbstractValidator<UpdateVisitRequest>, UpdateVisitValidator>()
             .AddScoped<AbstractValidator<CreateWeekDayScheduleRequest>, CreateWeekDayScheduleValidator>()
-            .AddScoped<AbstractValidator<UpdateWeekDayScheduleRequest>, UpdateWeekDayScheduleValidator>();
+            .AddScoped<AbstractValidator<UpdateWeekDayScheduleRequest>, UpdateWeekDayScheduleValidator>()
+            .AddScoped<AbstractValidator<CreateNotWorkingDayRequest>, CreateNotWorkingDayValidator>()
+            .AddScoped<AbstractValidator<UpdateNotWorkingDateRequest>, UpdateNotWorkingDayValidator>();
     }
 }
