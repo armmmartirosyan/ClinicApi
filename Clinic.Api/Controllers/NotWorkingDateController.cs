@@ -19,7 +19,7 @@ public class NotWorkingDateController(INotWorkingDaysService notWorkingDaysServi
             return Ok(new Response()
             {
                 Data = id,
-                Message = "Not working date created successfully.",
+                Message = "Not working day created successfully.",
                 Success = true
             });
         }
@@ -50,24 +50,26 @@ public class NotWorkingDateController(INotWorkingDaysService notWorkingDaysServi
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(long id)
     {
-        var notWorkingDay = await notWorkingDaysService.GetByIdAsync(id);
+        try
+        {
+            var notWorkingDay = await notWorkingDaysService.GetByIdAsync(id);
 
-        if (notWorkingDay == null)
+            return Ok(new Response()
+            {
+                Data = notWorkingDay,
+                Message = "",
+                Success = true
+            });
+        }
+        catch (Exception ex)
         {
             return NotFound(new Response()
             {
                 Data = null,
-                Message = "Not found day with this ID.",
+                Message = ex.Message,
                 Success = false
             });
         }
-
-        return Ok(new Response()
-        {
-            Data = notWorkingDay,
-            Message = "",
-            Success = true
-        });
     }
 
     [HttpPut("{id}")]
@@ -98,23 +100,25 @@ public class NotWorkingDateController(INotWorkingDaysService notWorkingDaysServi
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(long id)
     {
-        bool success = await notWorkingDaysService.DeleteAsync(id);
+        try
+        {
+            await notWorkingDaysService.DeleteAsync(id);
 
-        if (!success)
+            return Ok(new Response()
+            {
+                Data = null,
+                Message = "The day deleted successfully.",
+                Success = true
+            });
+        }
+        catch (InvalidDataException ex)
         {
             return BadRequest(new Response()
             {
                 Data = null,
-                Message = "Failed deleting the day.",
+                Message = ex.Message,
                 Success = false
             });
         }
-
-        return Ok(new Response()
-        {
-            Data = null,
-            Message = "The day deleted successfully.",
-            Success = true
-        });
     }
 }

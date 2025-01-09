@@ -1,6 +1,7 @@
 ﻿using Clinic.Core.Domain;
 using Clinic.Core.Interfaces.Repositories;
 using Clinic.Core.Interfaces.Services;
+using Clinic.Core.Models.DTO;
 using Clinic.Core.Models.Request;
 using Clinic.Core.Services;
 using Clinic.Infrastructure.Repositories;
@@ -38,6 +39,6 @@ public static class ServiceCollectionExtensions
             .AddScoped<AbstractValidator<CreateWeekDayScheduleRequest>, CreateWeekDayScheduleValidator>()
             .AddScoped<AbstractValidator<UpdateWeekDayScheduleRequest>, UpdateWeekDayScheduleValidator>()
             .AddScoped<AbstractValidator<CreateNotWorkingDayRequest>, CreateNotWorkingDayValidator>()
-            .AddScoped<AbstractValidator<UpdateNotWorkingDateRequest>, UpdateNotWorkingDayValidator>();
+            .AddScoped<AbstractValidator<UpdateNotWorkingDateValidateDTO>, UpdateNotWorkingDayValidator>();
     }
 }

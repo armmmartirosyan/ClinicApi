@@ -1,6 +1,7 @@
 ﻿using Clinic.Core.Domain;
 using Clinic.Core.Interfaces.Repositories;
 using Clinic.Core.Interfaces.Services;
+using Clinic.Core.Models.DTO;
 using Clinic.Core.Models.Request;
 using FluentValidation;
 using FluentValidation.Results;
@@ -11,7 +12,7 @@ public class NotWorkingDaysService
     (
         INotWorkingDaysRepository notWorkingDaysRepository,
         AbstractValidator<CreateNotWorkingDayRequest> createNotWorkingDateValidator,
-        AbstractValidator<UpdateNotWorkingDateRequest> updateNotWorkingDateValidator
+        AbstractValidator<UpdateNotWorkingDateValidateDTO> updateNotWorkingDateValidator
     ) : INotWorkingDaysService
 {
     public async Task<long> CreateAsync(CreateNotWorkingDayRequest request)
@@ -34,7 +35,14 @@ public class NotWorkingDaysService
 
     public async Task<NotWorkingDay> GetByIdAsync(long id)
     {
-        return await notWorkingDaysRepository.GetByIdAsync(id);
+        NotWorkingDay notWorkingDay = await notWorkingDaysRepository.GetByIdAsync(id);
+
+        if (notWorkingDay == null)
+        {
+            throw new Exception("Not found day with this ID.");
+        }
+
+        return notWorkingDay;
     }
 
     public async Task<IEnumerable<NotWorkingDay>> GetByDoctorIdAsync(long doctorId)
@@ -44,27 +52,33 @@ public class NotWorkingDaysService
 
     public async Task<bool> UpdateAsync(long id, UpdateNotWorkingDateRequest request)
     {
-        var notWorkingDay = await notWorkingDaysRepository.GetByIdAsync(id);
-
-        if (notWorkingDay == null)
+        var validationObject = new UpdateNotWorkingDateValidateDTO ()
         {
-            throw new InvalidDataException("Day not found.");
-        }
+            Id = id,
+            NotWorkDate = request.NotWorkDate
+        };
 
-        ValidationResult validationRes = updateNotWorkingDateValidator.Validate(request);
+        ValidationResult validationRes = updateNotWorkingDateValidator.Validate(validationObject);
 
         if (!validationRes.IsValid)
         {
             throw new InvalidDataException(validationRes.Errors[0].ErrorMessage);
         }
 
+        NotWorkingDay notWorkingDay = await notWorkingDaysRepository.GetByIdAsync (id);
+
         notWorkingDay.NotWorkDate = request.NotWorkDate;
 
         return await notWorkingDaysRepository.UpdateAsync(notWorkingDay);
     }
 
-    public async Task<bool> DeleteAsync(long id)
+    public async Task DeleteAsync(long id)
     {
-        return await notWorkingDaysRepository.DeleteAsync(id);
+        bool success =  await notWorkingDaysRepository.DeleteAsync(id);
+
+        if (!success)
+        {
+            throw new InvalidDataException("Failed deleting the day.");
+        }
     }
 }

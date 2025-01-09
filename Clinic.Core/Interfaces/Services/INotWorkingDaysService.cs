@@ -9,5 +9,5 @@ public interface INotWorkingDaysService
     Task<NotWorkingDay> GetByIdAsync(long id);
     Task<IEnumerable<NotWorkingDay>> GetByDoctorIdAsync(long doctorId);
     Task<bool> UpdateAsync(long id, UpdateNotWorkingDateRequest request);
-    Task<bool> DeleteAsync(long id);
+    Task DeleteAsync(long id);
 }

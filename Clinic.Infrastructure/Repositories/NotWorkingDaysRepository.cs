@@ -1,5 +1,6 @@
 ﻿using Clinic.Core.Domain;
 using Clinic.Core.Interfaces.Repositories;
+using Clinic.Core.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clinic.Infrastructure.Repositories;
@@ -46,15 +47,23 @@ public class NotWorkingDaysRepository(ClinicDbContext dbContext) : INotWorkingDa
         return await dbContext.Users.AnyAsync(ut => ut.Id == doctorId && ut.TypesId == doctorType.Id);
     }
 
-    //public async Task<bool> IsValidWeekDayIdAsync(int weekDayId)
-    //{
-    //    return await dbContext.WeekDays.AnyAsync(ut => ut.Id == weekDayId);
-    //}
+    public async Task<bool> DateNotRegisteredAlready(long doctorId, DateOnly date)
+    {
+        var alreadyRegistered = await dbContext.NotWorkingDays.FirstOrDefaultAsync(d => 
+            d.NotWorkDate == date && d.DoctorId == doctorId);
 
-    //public async Task<bool> WeekDayNotRegistered(int weekDayId, long doctorId)
-    //{
-    //    bool weekDayScheduleExists = await dbContext.WeekDaySchedules.AnyAsync(w => w.WeekDayId == weekDayId && w.DoctorId == doctorId);
+        return alreadyRegistered == null;
+    }
 
-    //    return !weekDayScheduleExists;
-    //}
+    public async Task<bool> DateNotRegisteredAlreadyUpdate(UpdateNotWorkingDateValidateDTO dto)
+    {
+        var currentDate = await dbContext.NotWorkingDays.FirstAsync(d => d.Id == dto.Id);
+
+        if (currentDate == null) return false;
+
+        var alreadyRegistered = await dbContext.NotWorkingDays.FirstOrDefaultAsync(d =>
+            d.NotWorkDate == dto.NotWorkDate && d.DoctorId == currentDate.DoctorId);
+
+        return alreadyRegistered == null;
+    }
 }
