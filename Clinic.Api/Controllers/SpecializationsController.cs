@@ -7,19 +7,19 @@ namespace Clinic.Api.Controllers;
 
 [ApiController]
 [Route("[controller]/[action]")]
-public class ProceduresController(IProceduresService proceduresService) : ControllerBase
+public class SpecializationsController(ISpecializationsService specializationsService) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> Add(AddProcedureRequest request)
+    public async Task<IActionResult> Add(AddUpdateSpecializationRequest request)
     {
         try
         {
-            long id = await proceduresService.AddAsync(request);
+            long id = await specializationsService.AddAsync(request);
 
             return Ok(new Response()
             {
                 Data = id,
-                Message = "Procedure added successfully.",
+                Message = "Specialization added successfully.",
                 Success = true
             });
         }
@@ -37,26 +37,26 @@ public class ProceduresController(IProceduresService proceduresService) : Contro
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var procedures = await proceduresService.GetProceduresAsync();
+        var specializations = await specializationsService.GetAllAsync();
 
         return Ok(new Response()
         {
-            Data = procedures,
+            Data = specializations,
             Message = "",
             Success = true
         });
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(long id)
+    public async Task<IActionResult> GetById(int id)
     {
         try
         {
-            var procedure = await proceduresService.GetByIdAsync(id);
+            var specialization = await specializationsService.GetByIdAsync(id);
 
             return Ok(new Response()
             {
-                Data = procedure,
+                Data = specialization,
                 Message = "",
                 Success = true
             });
@@ -73,16 +73,16 @@ public class ProceduresController(IProceduresService proceduresService) : Contro
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(long id, UpdateProcedureRequest request)
+    public async Task<IActionResult> Update(int id, AddUpdateSpecializationRequest request)
     {
         try
         {
-            bool success = await proceduresService.UpdateAsync(id, request);
+            bool success = await specializationsService.UpdateAsync(id, request);
 
             return Ok(new Response()
             {
                 Data = success,
-                Message = "Procedure updated successfully.",
+                Message = "Specialization updated successfully.",
                 Success = true
             });
         }
@@ -98,16 +98,16 @@ public class ProceduresController(IProceduresService proceduresService) : Contro
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(long id)
+    public async Task<IActionResult> Delete(int id)
     {
         try
         {
-            await proceduresService.DeleteAsync(id);
+            await specializationsService.DeleteAsync(id);
 
             return Ok(new Response()
             {
                 Data = null,
-                Message = "Procedure deleted successfully.",
+                Message = "Specialization deleted successfully.",
                 Success = true
             });
         }
