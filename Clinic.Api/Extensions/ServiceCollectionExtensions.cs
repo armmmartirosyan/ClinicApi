@@ -29,7 +29,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<INotWorkingDaysService, NotWorkingDaysService>()
             .AddScoped<IProceduresService, ProceduresService>()
             .AddScoped<ISpecializationsService, SpecializationsService>()
-            .AddScoped<IVisitProcedureService, VisitProcedureService>();
+            .AddScoped<IVisitProcedureService, VisitProcedureService>()
+            .AddScoped<IMedicinesAssignedService, MedicinesAssignedService>();
     }
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)
@@ -41,7 +42,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<INotWorkingDaysRepository, NotWorkingDaysRepository>()
             .AddScoped<IProceduresRepository, ProceduresRepository>()
             .AddScoped<ISpecializationsRepository, SpecializationsRepository>()
-            .AddScoped<IVisitProcedureRepository, VisitProcedureRepository>();
+            .AddScoped<IVisitProcedureRepository, VisitProcedureRepository>()
+            .AddScoped<IMedicinesAssignedRepository, MedicinesAssignedRepository>();
     } 
 
     public static IServiceCollection AddValidators(this IServiceCollection services)
@@ -66,6 +68,9 @@ public static class ServiceCollectionExtensions
             .AddScoped<AbstractValidator<UpdateProcedureRequest>, UpdateProcedureValidator>()
 
             .AddScoped<AbstractValidator<AddVisitProcedureRequest>, AddVisitProcedureValidator>()
-            .AddScoped<AbstractValidator<UpdateVisitProcedureRequest>, UpdateVisitProcedureValidator>();
+            .AddScoped<AbstractValidator<UpdateVisitProcedureRequest>, UpdateVisitProcedureValidator>()
+        
+            .AddScoped<AbstractValidator<AddMedicinesAssignedRequest>, AddMedicinesAssignedValidator>()
+            .AddScoped<AbstractValidator<UpdateMedicinesAssignedValidateDTO>, UpdateMedicinesAssignedValidator>();
     }
 }
