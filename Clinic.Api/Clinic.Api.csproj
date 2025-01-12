@@ -22,4 +22,8 @@
     <ProjectReference Include="..\Clinic.Infrastructure\Clinic.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Uploads\Images\" />
+  </ItemGroup>
+
 </Project>

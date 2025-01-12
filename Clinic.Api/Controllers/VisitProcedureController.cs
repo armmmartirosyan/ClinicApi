@@ -10,7 +10,7 @@ namespace Clinic.Api.Controllers;
 public class VisitProcedureController(IVisitProcedureService visitProcedureService) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> Add(AddVisitProcedureRequest request)
+    public async Task<IActionResult> Add([FromForm]  AddVisitProcedureRequest request)
     {
         try
         {
@@ -20,6 +20,31 @@ public class VisitProcedureController(IVisitProcedureService visitProcedureServi
             {
                 Data = id,
                 Message = "Visit procedure added successfully.",
+                Success = true
+            });
+        }
+        catch (InvalidDataException ex)
+        {
+            return BadRequest(new Response()
+            {
+                Data = null,
+                Message = ex.Message,
+                Success = false
+            });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UploadImages([FromForm] UploadProcedureImagesRequest request)
+    {
+        try
+        {
+            await visitProcedureService.UploadVisitProcedureImagesAsync(request);
+
+            return Ok(new Response()
+            {
+                Data = null,
+                Message = "Images uploaded successfully.",
                 Success = true
             });
         }
@@ -108,6 +133,31 @@ public class VisitProcedureController(IVisitProcedureService visitProcedureServi
             {
                 Data = null,
                 Message = "Visit procedure deleted successfully.",
+                Success = true
+            });
+        }
+        catch (InvalidDataException ex)
+        {
+            return BadRequest(new Response()
+            {
+                Data = null,
+                Message = ex.Message,
+                Success = false
+            });
+        }
+    }
+
+    [HttpDelete("{url}")]
+    public async Task<IActionResult> DeleteProcedureImage(string url)
+    {
+        try
+        {
+            await visitProcedureService.DeleteImageByUrlAsync(url);
+
+            return Ok(new Response()
+            {
+                Data = null,
+                Message = "Procedure image deleted successfully.",
                 Success = true
             });
         }

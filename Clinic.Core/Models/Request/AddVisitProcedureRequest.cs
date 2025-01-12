@@ -1,4 +1,6 @@
-﻿namespace Clinic.Core.Models.Request;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Clinic.Core.Models.Request;
 
 public class AddVisitProcedureRequest
 {
@@ -7,4 +9,6 @@ public class AddVisitProcedureRequest
     public long ProcedureId { get; set; }
 
     public string? Notes { get; set; }
+
+    public List<IFormFile>? Images { get; set; }
 }

@@ -1,9 +1,11 @@
 ﻿using Clinic.Core.Domain;
+using Clinic.Core.Interfaces.Helpers;
 using Clinic.Core.Interfaces.Repositories;
 using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.DTO;
 using Clinic.Core.Models.Request;
 using Clinic.Core.Services;
+using Clinic.Infrastructure.Helpers;
 using Clinic.Infrastructure.Repositories;
 using Clinic.Infrastructure.Validators;
 using FluentValidation;
@@ -12,6 +14,12 @@ namespace Clinic.Api.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    public static IServiceCollection AddHelpers(this IServiceCollection services)
+    {
+        return services
+            .AddScoped<IFileHelper, FileHelper>();
+    }
+
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         return services
@@ -41,6 +49,10 @@ public static class ServiceCollectionExtensions
         return services
             .AddScoped<AbstractValidator<User>, UserValidator>()
 
+            .AddScoped<AbstractValidator<IFormFile>, ImageValidator>()
+
+            .AddScoped<AbstractValidator<AddUpdateSpecializationRequest>, AddUpdateSpecializationValidator>()
+
             .AddScoped<AbstractValidator<AddVisitRequest>, AddVisitValidator>()
             .AddScoped<AbstractValidator<UpdateVisitRequest>, UpdateVisitValidator>()
 
@@ -52,8 +64,6 @@ public static class ServiceCollectionExtensions
 
             .AddScoped<AbstractValidator<AddProcedureRequest>, AddProcedureValidator>()
             .AddScoped<AbstractValidator<UpdateProcedureRequest>, UpdateProcedureValidator>()
-
-            .AddScoped<AbstractValidator<AddUpdateSpecializationRequest>, AddUpdateSpecializationValidator>()
 
             .AddScoped<AbstractValidator<AddVisitProcedureRequest>, AddVisitProcedureValidator>()
             .AddScoped<AbstractValidator<UpdateVisitProcedureRequest>, UpdateVisitProcedureValidator>();

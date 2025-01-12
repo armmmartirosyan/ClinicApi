@@ -11,4 +11,7 @@ public interface IVisitProcedureRepository
     Task<bool> DeleteAsync(long id);
     Task<bool> IsValidProcedureIdAsync(long id);
     Task<bool> IsValidVisitIdAsync(long id);
+    Task<bool> AddProcedureImageAsync(List<ProcedureImage> procedureImages);
+    Task<List<ProcedureImage>> GetImagesByVisitProcedureIdAsync(long id);
+    Task<bool> DeleteImageByUrlAsync(string url);
 }
