@@ -10,4 +10,6 @@ public partial class Specialization
     public string Name { get; set; } = null!;
 
     public virtual ICollection<User> Doctors { get; set; } = new List<User>();
+
+    public virtual ICollection<DoctorsSpecialization> DoctorsSpecializations { get; set; } = new List<DoctorsSpecialization>();
 }

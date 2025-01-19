@@ -13,11 +13,10 @@ public class AuthRepository(ClinicDbContext dbContext) : IAuthRepository
 
     public async Task<long> AddUserAsync(User user)
     {
-        await dbContext.Users.AddAsync(user);
+        var entry = await dbContext.Users.AddAsync(user);
         await dbContext.SaveChangesAsync();
-        User currentUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
 
-        return currentUser.Id;
+        return entry.Entity.Id;
     }
 
     public async Task<bool> IsValidUserTypeIdAsync(int userTypeId)
@@ -35,9 +34,20 @@ public class AuthRepository(ClinicDbContext dbContext) : IAuthRepository
         return await dbContext.Users.AnyAsync(ut => ut.Email == email);
     }
 
-    //public async Task<bool> IsValidSpecializationIdAsync(int specializationId)
-    //{
-    //    return await dbContext.Specializations
-    //        .AnyAsync(s => s.Id == specializationId);
-    //}
+    public async Task<bool> IsValidSpecializationIdAsync(int specializationId)
+    {
+        return await dbContext.Specializations
+            .AnyAsync(s => s.Id == specializationId);
+    }
+
+    public async Task<bool> AssignSpecializationsToUser(List<DoctorsSpecialization> doctorSpecializations)
+    {   
+        await dbContext.DoctorsSpecializations.AddRangeAsync(doctorSpecializations);
+        return await dbContext.SaveChangesAsync() > 0;
+    }
+
+    public async Task<bool> IsDoctorTypeId(int id)
+    {
+        return await dbContext.UserTypes.AnyAsync(ut => ut.Id == id && ut.Name == "Doctor");
+    }
 }

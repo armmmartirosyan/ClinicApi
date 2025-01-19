@@ -40,9 +40,7 @@ public partial class ClinicDbContext : DbContext
 
     public virtual DbSet<WeekDaySchedule> WeekDaySchedules { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("server=localhost;database=clinic_db;user=root;password=ADMIN", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.40-mysql"));
+    public virtual DbSet<DoctorsSpecialization> DoctorsSpecializations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -208,28 +206,6 @@ public partial class ClinicDbContext : DbContext
                 .HasForeignKey(d => d.TypesId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("users_ibfk_1");
-
-            entity.HasMany(d => d.Specializations).WithMany(p => p.Doctors)
-                .UsingEntity<Dictionary<string, object>>(
-                    "DoctorsSpecialization",
-                    r => r.HasOne<Specialization>().WithMany()
-                        .HasForeignKey("SpecializationId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("doctors_specializations_ibfk_2"),
-                    l => l.HasOne<User>().WithMany()
-                        .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("doctors_specializations_ibfk_1"),
-                    j =>
-                    {
-                        j.HasKey("DoctorId", "SpecializationId")
-                            .HasName("PRIMARY")
-                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
-                        j.ToTable("doctors_specializations");
-                        j.HasIndex(new[] { "SpecializationId" }, "specialization_id");
-                        j.IndexerProperty<long>("DoctorId").HasColumnName("doctor_id");
-                        j.IndexerProperty<int>("SpecializationId").HasColumnName("specialization_id");
-                    });
         });
 
         modelBuilder.Entity<UserType>(entity =>
@@ -387,6 +363,27 @@ public partial class ClinicDbContext : DbContext
                 .HasForeignKey(d => d.WeekDayId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("week_day_schedule_ibfk_2");
+        });
+
+        modelBuilder.Entity<DoctorsSpecialization>(entity =>
+        {
+            entity.ToTable("doctors_specializations");
+            entity.HasKey(e => new { e.DoctorId, e.SpecializationId });
+
+            entity.Property(e => e.DoctorId).HasColumnName("doctor_id").IsRequired();
+            entity.Property(e => e.SpecializationId).HasColumnName("specialization_id").IsRequired();
+
+            entity.HasOne(e => e.Doctor)
+                .WithMany(d => d.DoctorsSpecializations)
+                .HasForeignKey(e => e.DoctorId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_doctor_id");
+
+            entity.HasOne(e => e.Specialization)
+                .WithMany(s => s.DoctorsSpecializations)
+                .HasForeignKey(e => e.SpecializationId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_specialization_id");
         });
 
         OnModelCreatingPartial(modelBuilder);

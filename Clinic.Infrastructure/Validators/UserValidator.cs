@@ -1,11 +1,11 @@
 ﻿using System.Text.RegularExpressions;
-using Clinic.Core.Domain;
 using Clinic.Core.Interfaces.Repositories;
+using Clinic.Core.Models.Request;
 using FluentValidation;
 
 namespace Clinic.Infrastructure.Validators;
 
-public class UserValidator : AbstractValidator<User>
+public class UserValidator : AbstractValidator<RegisterRequest>
 {
     private readonly IAuthRepository _authRepository;
     public UserValidator(IAuthRepository authRepository)
@@ -51,9 +51,10 @@ public class UserValidator : AbstractValidator<User>
            .NotEmpty().WithMessage("UserTypeId is required.")
            .MustAsync(ValidateUserTypeId).WithMessage("UserTypeId is invalid.");
 
-        //RuleFor(x => x.SpecializationIds)
-        //    .NotEmpty().WithMessage("Specializations are required.")
-        //    .MustAsync(ValidateSpecializationIds).WithMessage("One or more specialization IDs are invalid.");
+        RuleFor(x => x.Specializations)
+            .MustAsync(BeValidSpecializationIds)
+            .WhenAsync(ValidateSpecializationsWhen)
+            .WithMessage("There is an invalid specialization ID.");
     }
 
     private bool BeAValidName(string name)
@@ -109,18 +110,27 @@ public class UserValidator : AbstractValidator<User>
         return await _authRepository.IsEmailDuplicated(email) == false;
     }
 
-    //private async Task<bool> ValidateSpecializationIds(List<int> specializationIds, CancellationToken cancellationToken)
-    //{
-    //    if (specializationIds == null || !specializationIds.Any())
-    //        return false;
+    private async Task<bool> BeValidSpecializationIds(List<int>? specializationIds, CancellationToken cancellationToken)
+    {
+        if (specializationIds == null || specializationIds.Count  < 1)
+        {
+            return false;
+        }
 
-    //    foreach (var specializationId in specializationIds)
-    //    {
-    //        if (!await _specializationService.IsValidSpecializationIdAsync(specializationId))
-    //        {
-    //            return false;
-    //        }
-    //    }
-    //    return true;
-    //}
+        foreach (var specializationId in specializationIds)
+        {
+            bool validSpecializationId = await _authRepository.IsValidSpecializationIdAsync(specializationId);
+
+            if (!validSpecializationId)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private async Task<bool> ValidateSpecializationsWhen(RegisterRequest request, CancellationToken cancellationToken)
+    {
+        return await _authRepository.IsDoctorTypeId(request.TypesId);
+    }
 }

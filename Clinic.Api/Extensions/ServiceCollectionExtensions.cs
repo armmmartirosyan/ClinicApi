@@ -1,5 +1,4 @@
-﻿using Clinic.Core.Domain;
-using Clinic.Core.Interfaces.Helpers;
+﻿using Clinic.Core.Interfaces.Helpers;
 using Clinic.Core.Interfaces.Repositories;
 using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.DTO;
@@ -49,7 +48,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddValidators(this IServiceCollection services)
     {
         return services
-            .AddScoped<AbstractValidator<User>, UserValidator>()
+            .AddScoped<AbstractValidator<RegisterRequest>, UserValidator>()
 
             .AddScoped<AbstractValidator<IFormFile>, ImageValidator>()
 

@@ -7,7 +7,7 @@ using FluentValidation.Results;
 
 namespace Clinic.Core.Services;
  
-public class AuthService(IAuthRepository authRepository, AbstractValidator<User> userValidator) : IAuthService
+public class AuthService(IAuthRepository authRepository, AbstractValidator<RegisterRequest> userValidator) : IAuthService
 {
     public async Task<string> SignInAsync(SignInRequest request)
     {
@@ -36,30 +36,50 @@ public class AuthService(IAuthRepository authRepository, AbstractValidator<User>
 
     public async Task<long> RegisterAsync(RegisterRequest request)
     {
-        var user = new User
-        {
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Email = request.Email,
-            Password = request.Password,
-            Phone = request.Phone,
-            TypesId = request.TypesId,
-            BirthDate = request.BirthDate,
-        };
-
-        ValidationResult result = userValidator.Validate(user);
+        ValidationResult result = userValidator.Validate(request);
 
         if (!result.IsValid)
         {
             throw new InvalidDataException(result.Errors[0].ErrorMessage);
         }
 
-        user.Password = HashPassword(request.Password);
+        var user = new User
+        {
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email,
+            Phone = request.Phone,
+            TypesId = request.TypesId,
+            BirthDate = request.BirthDate,
+            Password = HashPassword(request.Password),
+        };
 
         var userId = await authRepository.AddUserAsync(user);
 
-        Console.WriteLine(request.Specializations.ToString());
-        //TODO: Add specialization logic
+        if (userId == null || userId < 1)
+        {
+            throw new InvalidDataException("Failed registering user.");
+        }
+
+        var isDoctorTypeId = await authRepository.IsDoctorTypeId(request.TypesId);
+
+        if (!isDoctorTypeId)
+        {
+            return userId;
+        }
+
+        List<DoctorsSpecialization> doctorsSpecializations = new List<DoctorsSpecialization>();
+
+        foreach (var specializationId in request.Specializations)
+        {
+            doctorsSpecializations.Add(new DoctorsSpecialization()
+            {
+                DoctorId = userId,
+                SpecializationId = specializationId
+            });
+        }
+
+        await authRepository.AssignSpecializationsToUser(doctorsSpecializations);
 
         return userId;
     }

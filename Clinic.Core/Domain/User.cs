@@ -42,4 +42,6 @@ public partial class User
     public virtual ICollection<WeekDaySchedule> WeekDaySchedules { get; set; } = new List<WeekDaySchedule>();
 
     public virtual ICollection<Specialization> Specializations { get; set; } = new List<Specialization>();
+
+    public virtual ICollection<DoctorsSpecialization> DoctorsSpecializations { get; set; } = new List<DoctorsSpecialization>();
 }
