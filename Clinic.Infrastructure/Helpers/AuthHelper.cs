@@ -1,5 +1,4 @@
-﻿//using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Text;
 using Clinic.Core.Domain;
 using Clinic.Core.Interfaces.Helpers;
@@ -9,11 +8,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Clinic.Infrastructure.Helpers;
 
-public class TokenHelper(IConfiguration configuration) : ITokenHelper
+public class AuthHelper(IConfiguration configuration) : IAuthHelper
 {
-    public string Create(User user)
+    public string GenerateToken(User user)
     {
-        string secretKey = configuration["Jwt:Secret"];
+        string secretKey = configuration["Jwt:Secret"]!;
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
@@ -34,5 +33,24 @@ public class TokenHelper(IConfiguration configuration) : ITokenHelper
         string token = handler.CreateToken(tokenDescriptor);
 
         return token;
+    }
+
+    public bool VerifyPassword(string requestPassword, string password)
+    {
+        //TODO: Improve the verification
+        //using var sha256 = SHA256.Create();
+        //var hashedPassword = Convert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(password)));
+        //return hashedPassword == passwordHash;
+
+        return requestPassword == password;
+    }
+
+    public string HashPassword(string password)
+    {
+        //TODO: Improve the implementation
+        //using var sha256 = SHA256.Create();
+        //return Convert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(password)));
+
+        return password;
     }
 }

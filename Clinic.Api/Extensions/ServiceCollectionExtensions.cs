@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
     {
         return services
             .AddScoped<IFileHelper, FileHelper>()
-            .AddScoped<ITokenHelper, TokenHelper>();
+            .AddScoped<IAuthHelper, AuthHelper>();
     }
 
     public static IServiceCollection AddServices(this IServiceCollection services)
