@@ -37,20 +37,11 @@ public class AuthHelper(IConfiguration configuration) : IAuthHelper
 
     public bool VerifyPassword(string requestPassword, string password)
     {
-        //TODO: Improve the verification
-        //using var sha256 = SHA256.Create();
-        //var hashedPassword = Convert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(password)));
-        //return hashedPassword == passwordHash;
-
-        return requestPassword == password;
+        return BCrypt.Net.BCrypt.Verify(requestPassword, password);
     }
 
     public string HashPassword(string password)
     {
-        //TODO: Improve the implementation
-        //using var sha256 = SHA256.Create();
-        //return Convert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(password)));
-
-        return password;
+        return BCrypt.Net.BCrypt.HashPassword(password);
     }
 }
