@@ -8,7 +8,9 @@ using Clinic.Infrastructure.Helpers;
 using Clinic.Infrastructure.Repositories;
 using Clinic.Infrastructure.Validators;
 using FluentValidation;
- 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
+
 namespace Clinic.Api.Extensions;
 
 public static class ServiceCollectionExtensions
@@ -16,7 +18,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddHelpers(this IServiceCollection services)
     {
         return services
-            .AddScoped<IFileHelper, FileHelper>();
+            .AddScoped<IFileHelper, FileHelper>()
+            .AddScoped<ITokenHelper, TokenHelper>();
     }
 
     public static IServiceCollection AddServices(this IServiceCollection services)
@@ -71,5 +74,42 @@ public static class ServiceCollectionExtensions
         
             .AddScoped<AbstractValidator<AddMedicinesAssignedRequest>, AddMedicinesAssignedValidator>()
             .AddScoped<AbstractValidator<UpdateMedicinesAssignedValidateDTO>, UpdateMedicinesAssignedValidator>();
+    }
+
+    public static IServiceCollection AddSwaggerGenWithAuth(this IServiceCollection services)
+    {
+        return services.AddSwaggerGen(o =>
+        {
+            o.CustomSchemaIds(id => id.FullName.Replace("+", "-"));
+
+            var securityScheme = new OpenApiSecurityScheme
+            {
+                Name = "JWT Authentication",
+                Description = "Enter your JWT token in this field",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.Http,
+                Scheme = JwtBearerDefaults.AuthenticationScheme,
+                BearerFormat = "JWT"
+            };
+
+            o.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, securityScheme);
+
+            var securityRequirment = new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference =  new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id =  JwtBearerDefaults.AuthenticationScheme
+                        }
+                    },
+                    []
+                }
+            };
+
+            o.AddSecurityRequirement(securityRequirment);
+        });
     }
 }

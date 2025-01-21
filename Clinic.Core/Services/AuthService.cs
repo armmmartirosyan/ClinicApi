@@ -1,4 +1,5 @@
 ﻿using Clinic.Core.Domain;
+using Clinic.Core.Interfaces.Helpers;
 using Clinic.Core.Interfaces.Repositories;
 using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.Request;
@@ -7,7 +8,12 @@ using FluentValidation.Results;
 
 namespace Clinic.Core.Services;
  
-public class AuthService(IAuthRepository authRepository, AbstractValidator<RegisterRequest> userValidator) : IAuthService
+public class AuthService
+    (
+        IAuthRepository authRepository, 
+        AbstractValidator<RegisterRequest> userValidator,
+        ITokenHelper tokenHelper
+    ) : IAuthService
 {
     public async Task<string> SignInAsync(SignInRequest request)
     {
@@ -18,8 +24,7 @@ public class AuthService(IAuthRepository authRepository, AbstractValidator<Regis
             throw new UnauthorizedAccessException("Invalid email or password.");
         }
 
-        //TODO: Improve the response.
-        var token = "mock-jwt-token";
+        var token = tokenHelper.Create(user);
 
         return token;
     }
@@ -31,7 +36,7 @@ public class AuthService(IAuthRepository authRepository, AbstractValidator<Regis
         //var hashedPassword = Convert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(password)));
         //return hashedPassword == passwordHash;
 
-        return false;
+        return password == passwordHash;
     }
 
     public async Task<long> RegisterAsync(RegisterRequest request)

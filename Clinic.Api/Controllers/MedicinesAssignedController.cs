@@ -1,6 +1,7 @@
 ﻿using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.Request;
 using Clinic.Core.Models.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic.Api.Controllers;
@@ -35,6 +36,7 @@ public class MedicinesAssignedController(IMedicinesAssignedService medicinesAssi
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetAll()
     {
         var medicinesAssigned = await medicinesAssignedService.GetAllAsync();
