@@ -1,6 +1,7 @@
 ﻿using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.Request;
 using Clinic.Core.Models.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic.Api.Controllers;
@@ -34,6 +35,7 @@ public class NotWorkingDateController(INotWorkingDaysService notWorkingDaysServi
         }
     }
 
+    [Authorize(Roles = "Doctor")]
     [HttpGet("{doctorId}")]
     public async Task<IActionResult> GetByDoctorId(long doctorId)
     {
@@ -47,6 +49,7 @@ public class NotWorkingDateController(INotWorkingDaysService notWorkingDaysServi
         });
     }
 
+    [Authorize(Roles = "Patient")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(long id)
     {

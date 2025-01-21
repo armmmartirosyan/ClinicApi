@@ -36,7 +36,6 @@ public class MedicinesAssignedController(IMedicinesAssignedService medicinesAssi
     }
 
     [HttpGet]
-    [Authorize]
     public async Task<IActionResult> GetAll()
     {
         var medicinesAssigned = await medicinesAssignedService.GetAllAsync();

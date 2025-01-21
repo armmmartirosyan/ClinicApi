@@ -11,7 +11,19 @@ public class AuthRepository(ClinicDbContext dbContext) : IAuthRepository
         return await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
     }
 
-    public async Task<long> AddUserAsync(User user)
+    public async Task<User> GetUserWithRoleByEmailAsync(string email)
+    {
+        return await dbContext.Users.Where(u => u.Email == email).Join(dbContext.Users, u => u.Id, u => u.Id, (u, _) => new User
+        {
+            Id = u.Id,
+            Email = email,
+            TypesId = u.TypesId,
+            Password = u.Password,
+            Types = u.Types, 
+        }).FirstOrDefaultAsync();
+    }
+
+public async Task<long> AddUserAsync(User user)
     {
         var entry = await dbContext.Users.AddAsync(user);
         await dbContext.SaveChangesAsync();

@@ -21,6 +21,7 @@ public class AuthHelper(IConfiguration configuration) : IAuthHelper
             Subject = new ClaimsIdentity([
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Types.Name)
             ]), 
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials = credentials,

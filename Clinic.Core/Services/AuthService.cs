@@ -17,7 +17,7 @@ public class AuthService
 {
     public async Task<string> SignInAsync(SignInRequest request)
     {
-        var user = await authRepository.GetUserByEmailAsync(request.Email);
+        var user = await authRepository.GetUserWithRoleByEmailAsync(request.Email);
 
         bool isValidPassword = authHelper.VerifyPassword(request.Password, user.Password);
 
