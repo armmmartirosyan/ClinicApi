@@ -65,7 +65,7 @@ public class FileHelper(AbstractValidator<IFormFile> imageValidator) : IFileHelp
         }
     }
 
-    public string GetImageUploadsDir()
+    public static string GetImageUploadsDir()
     {
         string currentDir = Directory.GetCurrentDirectory();
         string rootDir = Directory.GetParent(currentDir).FullName;

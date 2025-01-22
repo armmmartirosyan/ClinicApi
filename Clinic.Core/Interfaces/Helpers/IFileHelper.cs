@@ -6,5 +6,4 @@ public interface IFileHelper
 {
     Task<List<string>> WriteImageAsync(List<IFormFile>? files);
     bool DeleteImage(string url);
-    string GetImageUploadsDir();
 }
