@@ -25,9 +25,9 @@ public class FileHelper(AbstractValidator<IFormFile> imageValidator) : IFileHelp
                 continue;
             }
 
-            var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
-            var fileNameCombinedFolder = Path.Combine("Uploads", "Images", uniqueFileName);
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileNameCombinedFolder);
+            string uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
+            string imageUploadsDir = GetImageUploadsDir();
+            string filePath = Path.Combine(imageUploadsDir, uniqueFileName);
 
             await using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
@@ -63,5 +63,21 @@ public class FileHelper(AbstractValidator<IFormFile> imageValidator) : IFileHelp
             Console.WriteLine($"An error occurred while deleting the file: {ex.Message}");
             return false;
         }
+    }
+
+    public string GetImageUploadsDir()
+    {
+        string currentDir = Directory.GetCurrentDirectory();
+        string rootDir = Directory.GetParent(currentDir).FullName;
+        string parentOfRootDir = Directory.GetParent(rootDir).FullName;
+        
+        string uploadsDir = Path.Combine(parentOfRootDir, "Uploads", "Images");
+
+        if (!Directory.Exists(uploadsDir))
+        {
+            Directory.CreateDirectory(uploadsDir);
+        }
+
+        return uploadsDir;
     }
 }
