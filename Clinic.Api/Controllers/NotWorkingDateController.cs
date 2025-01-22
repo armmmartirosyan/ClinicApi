@@ -1,6 +1,8 @@
 ﻿using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.Request;
 using Clinic.Core.Models.Response;
+//using Clinic.Infrastructure.Helpers;
+//using Clinic.Core.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,6 +41,9 @@ public class NotWorkingDateController(INotWorkingDaysService notWorkingDaysServi
     [HttpGet("{doctorId}")]
     public async Task<IActionResult> GetByDoctorId(long doctorId)
     {
+        //Request.Headers.TryGetValue("Authorization", out var authHeader);
+        //DecodedTokenDTO decodedToken = AuthHelper.DecodeToken(authHeader);
+
         var notWorkingDays = await notWorkingDaysService.GetByDoctorIdAsync(doctorId);
 
         return Ok(new Response()

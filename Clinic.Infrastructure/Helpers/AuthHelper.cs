@@ -2,6 +2,7 @@
 using System.Text;
 using Clinic.Core.Domain;
 using Clinic.Core.Interfaces.Helpers;
+using Clinic.Core.Models.DTO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -34,6 +35,26 @@ public class AuthHelper(IConfiguration configuration) : IAuthHelper
         string token = handler.CreateToken(tokenDescriptor);
 
         return token;
+    }
+
+    public static DecodedTokenDTO DecodeToken(string token)
+    {
+        string? splitToken = token.ToString().Split(' ').Last();
+
+        var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+        var jwtToken = tokenHandler.ReadJwtToken(splitToken);
+        string? stringUserId = jwtToken.Claims.First(c => c.Type == JwtRegisteredClaimNames.Sub).Value;
+        string? email = jwtToken.Claims.First(c => c.Type == JwtRegisteredClaimNames.Email).Value;
+        string? role = jwtToken.Claims.First(c => c.Type == ClaimTypes.Role).Value;
+
+        long.TryParse(stringUserId, out long userId);
+
+        return new DecodedTokenDTO
+        {
+            UserId = userId,
+            Email = email,
+            Role = role
+        };
     }
 
     public bool VerifyPassword(string requestPassword, string password)
