@@ -31,7 +31,7 @@ public class AuthService
         return token;
     }
 
-    public async Task<long> RegisterAsync(RegisterRequest request)
+    public async Task<string> RegisterAsync(RegisterRequest request)
     {
         ValidationResult result = userValidator.Validate(request);
 
@@ -60,9 +60,15 @@ public class AuthService
 
         var isDoctorTypeId = await authRepository.IsDoctorTypeId(request.TypesId);
 
+        string token = await SignInAsync(new SignInRequest()
+        {
+            Email = request.Email,
+            Password = request.Password
+        });
+
         if (!isDoctorTypeId)
         {
-            return userId;
+            return token;
         }
 
         List<DoctorsSpecialization> doctorsSpecializations = new List<DoctorsSpecialization>();
@@ -78,6 +84,11 @@ public class AuthService
 
         await authRepository.AssignSpecializationsToUser(doctorsSpecializations);
 
-        return userId;
+        return token;
+    }
+    
+    public async Task<UserType?> GetUserTypeByName(string name)
+    {
+        return await authRepository.GetUserTypeByName(name);
     }
 }

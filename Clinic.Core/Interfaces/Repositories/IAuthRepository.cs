@@ -13,4 +13,5 @@ public interface IAuthRepository
     Task<bool> AssignSpecializationsToUser(List<DoctorsSpecialization> specializations);
     Task<bool> IsDoctorTypeId(int id);
     Task<User> GetUserWithRoleByEmailAsync(string email);
+    Task<UserType?> GetUserTypeByName(string name);
 }

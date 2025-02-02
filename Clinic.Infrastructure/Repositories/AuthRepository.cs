@@ -62,4 +62,9 @@ public async Task<long> AddUserAsync(User user)
     {
         return await dbContext.UserTypes.AnyAsync(ut => ut.Id == id && ut.Name == "Doctor");
     }
+    
+    public async Task<UserType?> GetUserTypeByName(string name)
+    {
+        return await dbContext.UserTypes.FirstOrDefaultAsync(ut => ut.Name == name);
+    }
 }

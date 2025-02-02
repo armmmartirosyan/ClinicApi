@@ -1,4 +1,5 @@
-﻿using Clinic.Core.Interfaces.Services;
+﻿using Clinic.Core.Domain;
+using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.Request;
 using Clinic.Core.Models.Response;
 using Microsoft.AspNetCore.Mvc;
@@ -39,12 +40,37 @@ public class AuthController(IAuthService authService) : ControllerBase
     {
         try
         {
-            long userId = await authService.RegisterAsync(request);
+            string token = await authService.RegisterAsync(request);
 
             return Ok(new Response()
             {
-                Data = userId,
+                Data = token,
                 Message = "Registration successful.",
+                Success = true
+            });
+        }
+        catch (InvalidDataException ex)
+        {
+            return BadRequest(new Response()
+            {
+                Data = null,
+                Message = ex.Message,
+                Success = false
+            });
+        }
+    }
+    
+    [HttpGet("{name}")]
+    public async Task<IActionResult> UserType(string name)
+    {
+        try
+        {
+            UserType? userType = await authService.GetUserTypeByName(name);
+
+            return Ok(new Response()
+            {
+                Data = userType,
+                Message = "",
                 Success = true
             });
         }
