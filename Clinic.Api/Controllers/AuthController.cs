@@ -2,6 +2,7 @@
 using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.Request;
 using Clinic.Core.Models.Response;
+using Clinic.Core.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic.Api.Controllers;
@@ -70,6 +71,32 @@ public class AuthController(IAuthService authService) : ControllerBase
             return Ok(new Response()
             {
                 Data = userType,
+                Message = "",
+                Success = true
+            });
+        }
+        catch (InvalidDataException ex)
+        {
+            return BadRequest(new Response()
+            {
+                Data = null,
+                Message = ex.Message,
+                Success = false
+            });
+        }
+    }
+    
+    [HttpGet("{page}")]
+    public async Task<IActionResult> Doctors(int page)
+    {
+        try
+        {
+            int pageSize = 1;
+            InfiniteScrollDTO<User> data = await authService.GetDoctors(page, pageSize);
+
+            return Ok(new Response()
+            {
+                Data = data,
                 Message = "",
                 Success = true
             });

@@ -1,6 +1,8 @@
-﻿using Clinic.Core.Interfaces.Services;
+﻿using Clinic.Core.Domain;
+using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.Request;
 using Clinic.Core.Models.Response;
+using Clinic.Core.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic.Api.Controllers;
@@ -59,14 +61,15 @@ public class VisitProcedureController(IVisitProcedureService visitProcedureServi
         }
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
+    [HttpGet("{page}")]
+    public async Task<IActionResult> GetAll(int page)
     {
-        var visitProcedures = await visitProcedureService.GetAllAsync();
+        int pageSize = 5;
+        var data = await visitProcedureService.GetAllAsync(page, pageSize);
 
         return Ok(new Response()
         {
-            Data = visitProcedures,
+            Data = data,
             Message = "",
             Success = true
         });

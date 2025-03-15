@@ -1,11 +1,12 @@
 ﻿using Clinic.Core.Domain;
+using Clinic.Core.Models.DTO;
 
 namespace Clinic.Core.Interfaces.Repositories;
 
 public interface IMedicinesAssignedRepository
 {
     Task<long> AddAsync(MedicinesAssigned medicinesAssigned);
-    Task<List<MedicinesAssigned>> GetAllAsync();
+    Task<InfiniteScrollDTO<MedicinesAssigned>> GetAllAsync(int page, int pageSize);
     Task<MedicinesAssigned?> GetByIdAsync(long id);
     Task<bool> UpdateAsync(MedicinesAssigned medicinesAssigned);
     Task<bool> DeleteAsync(long id);

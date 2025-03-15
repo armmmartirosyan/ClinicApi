@@ -1,5 +1,6 @@
 ﻿using Clinic.Core.Domain;
 using Clinic.Core.Interfaces.Repositories;
+using Clinic.Core.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clinic.Infrastructure.Repositories;
@@ -67,4 +68,73 @@ public async Task<long> AddUserAsync(User user)
     {
         return await dbContext.UserTypes.FirstOrDefaultAsync(ut => ut.Name == name);
     }
+    
+    public async Task<InfiniteScrollDTO<User>> GetDoctors(int page, int pageSize)
+    {
+        var doctorType = await dbContext.UserTypes.FirstOrDefaultAsync(ut => ut.Name == "Doctor");
+        var totalItems = await dbContext.Users.CountAsync();
+        bool allowNext = (page * pageSize) < totalItems;
+        List<User> doctors = await dbContext.Users
+            .Where(u => u.TypesId == doctorType.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Join(dbContext.DoctorsSpecializations, u => u.Id, ds => ds.DoctorId, (u, ds) =>  new User()
+            {
+                Id = u.Id,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                CreatedAt = u.CreatedAt,
+                Email = u.Email,
+                NotWorkingDays = u.NotWorkingDays,
+                Types = u.Types,
+                WeekDaySchedules = u.WeekDaySchedules,
+                Phone = u.Phone,
+                ImageUrl = u.ImageUrl,
+                TypesId = u.TypesId,
+                DoctorsSpecializations = u.DoctorsSpecializations
+            })
+            .ToListAsync();
+
+        return new InfiniteScrollDTO<User>()
+        {
+            AllowNext = allowNext,
+            Data = doctors
+        };
+    }
 }
+/*
+.Join(dbContext.DoctorsSpecializations, u => u.Id, ds => ds.DoctorId, (u, ds) => new User()
+   {
+       Id = u.Id,
+       FirstName = u.FirstName,
+       LastName = u.LastName,
+       CreatedAt = u.CreatedAt,
+       Email = u.Email,
+       NotWorkingDays = u.NotWorkingDays,
+       Types = u.Types,
+       WeekDaySchedules = u.WeekDaySchedules,
+       Phone = u.Phone,
+       ImageUrl = u.ImageUrl,
+       TypesId = u.TypesId,
+       DoctorsSpecializations = u.DoctorsSpecializations,
+   })
+
+
+.Join(dbContext.DoctorsSpecializations, u => u.Id, ds => ds.DoctorId, (u, ds) => new  { u, ds })
+.Join(dbContext.Specializations, ur => ur.ds.Specialization, r => r.Id, (ur, r) => new User()
+   {
+       Id = ur.u.Id,
+       FirstName = ur.u.FirstName,
+       LastName = ur.u.LastName,
+       CreatedAt = ur.u.CreatedAt,
+       Email = ur.u.Email,
+       NotWorkingDays = ur.u.NotWorkingDays,
+       DoctorsSpecializations = ur.u.DoctorsSpecializations,
+       Types = ur.u.Types,
+       WeekDaySchedules = ur.u.WeekDaySchedules,
+       Phone = ur.u.Phone,
+       ImageUrl = ur.u.ImageUrl,
+       TypesId = ur.u.TypesId,
+   })
+
+*/

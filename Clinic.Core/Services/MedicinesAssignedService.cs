@@ -52,9 +52,9 @@ public class MedicinesAssignedService
         return medicinesAssigned;
     }
 
-    public async Task<IEnumerable<MedicinesAssigned>> GetAllAsync()
+    public async Task<InfiniteScrollDTO<MedicinesAssigned>> GetAllAsync(int page, int pageSize)
     {
-        return await medicinesAssignedRepository.GetAllAsync();
+        return await medicinesAssignedRepository.GetAllAsync(page, pageSize);
     }
 
     public async Task<bool> UpdateAsync(long id, UpdateMedicinesAssignedRequest request)

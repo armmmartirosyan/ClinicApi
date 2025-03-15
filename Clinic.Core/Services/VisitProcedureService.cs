@@ -1,4 +1,5 @@
 ﻿using Clinic.Core.Domain;
+using Clinic.Core.Models.DTO;
 using Clinic.Core.Interfaces.Helpers;
 using Clinic.Core.Interfaces.Repositories;
 using Clinic.Core.Interfaces.Services;
@@ -67,9 +68,9 @@ public class VisitProcedureService
         return visitProcedure;
     }
 
-    public async Task<IEnumerable<VisitsProcedure>> GetAllAsync()
+    public async Task<InfiniteScrollDTO<VisitsProcedure>> GetAllAsync(int page, int pageSize)
     {
-        return await visitProcedureRepository.GetAllAsync();
+        return await visitProcedureRepository.GetAllAsync(page, pageSize);
     }
 
     public async Task<bool> UpdateAsync(long id, UpdateVisitProcedureRequest request)

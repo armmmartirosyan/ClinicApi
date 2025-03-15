@@ -35,14 +35,15 @@ public class MedicinesAssignedController(IMedicinesAssignedService medicinesAssi
         }
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
+    [HttpGet("{page}")]
+    public async Task<IActionResult> GetAll(int page)
     {
-        var medicinesAssigned = await medicinesAssignedService.GetAllAsync();
+        var pageSize = 5;
+        var data = await medicinesAssignedService.GetAllAsync(page, pageSize);
 
         return Ok(new Response()
         {
-            Data = medicinesAssigned,
+            Data = data,
             Message = "",
             Success = true
         });

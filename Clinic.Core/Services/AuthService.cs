@@ -5,6 +5,7 @@ using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.Request;
 using FluentValidation;
 using FluentValidation.Results;
+using Clinic.Core.Models.DTO;
 
 namespace Clinic.Core.Services;
  
@@ -90,5 +91,10 @@ public class AuthService
     public async Task<UserType?> GetUserTypeByName(string name)
     {
         return await authRepository.GetUserTypeByName(name);
+    }
+    
+    public async Task<InfiniteScrollDTO<User>> GetDoctors(int page, int pageSize)
+    {
+        return await authRepository.GetDoctors(page, pageSize);
     }
 }

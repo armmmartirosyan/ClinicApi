@@ -1,11 +1,12 @@
 ﻿using Clinic.Core.Domain;
+using Clinic.Core.Models.DTO;
 
 namespace Clinic.Core.Interfaces.Repositories;
 
 public interface IVisitProcedureRepository
 {
     Task<long> AddAsync(VisitsProcedure visitProcedure);
-    Task<List<VisitsProcedure>> GetAllAsync();
+    Task<InfiniteScrollDTO<VisitsProcedure>> GetAllAsync(int page, int pageSize);
     Task<VisitsProcedure?> GetByIdAsync(long id);
     Task<bool> UpdateAsync(VisitsProcedure visitProcedure);
     Task<bool> DeleteAsync(long id);

@@ -1,4 +1,5 @@
 ﻿using Clinic.Core.Domain;
+using Clinic.Core.Models.DTO;
 
 namespace Clinic.Core.Interfaces.Repositories;
 
@@ -14,4 +15,5 @@ public interface IAuthRepository
     Task<bool> IsDoctorTypeId(int id);
     Task<User> GetUserWithRoleByEmailAsync(string email);
     Task<UserType?> GetUserTypeByName(string name);
+    Task<InfiniteScrollDTO<User>> GetDoctors(int page, int pageSize);
 }

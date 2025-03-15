@@ -1,4 +1,5 @@
 ﻿using Clinic.Core.Domain;
+using Clinic.Core.Models.DTO;
 using Clinic.Core.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,20 +22,33 @@ public class VisitProcedureRepository(ClinicDbContext dbContext) : IVisitProcedu
         return await dbContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<List<VisitsProcedure>> GetAllAsync()
+    public async Task<InfiniteScrollDTO<VisitsProcedure>> GetAllAsync(int page, int pageSize)
     {
-        return await dbContext.VisitsProcedures.Join(dbContext.VisitsProcedures, vp => vp.Id, vp => vp.Id, (vp, _) => new VisitsProcedure
+        var totalItems = await dbContext.VisitsProcedures.CountAsync();
+        var allowNext = (page * pageSize) < totalItems;
+        
+        List<VisitsProcedure> procedures = await dbContext.VisitsProcedures
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Join(dbContext.VisitsProcedures, vp => vp.Id, vp => vp.Id, (vp, _) => new VisitsProcedure
+            {
+                Id = vp.Id,
+                Notes = vp.Notes,
+                VisitId = vp.VisitId,
+                CreatedAt = vp.CreatedAt,
+                ProcedureId = vp.ProcedureId,
+                Visit = vp.Visit,
+                Procedure = vp.Procedure,
+                ProcedureImages = vp.ProcedureImages,
+                MedicinesAssigneds = vp.MedicinesAssigneds,
+            })
+            .ToListAsync();
+        
+        return new InfiniteScrollDTO<VisitsProcedure>()
         {
-            Id = vp.Id,
-            Notes = vp.Notes,
-            VisitId = vp.VisitId,
-            CreatedAt = vp.CreatedAt,
-            ProcedureId = vp.ProcedureId,
-            Visit = vp.Visit,
-            Procedure = vp.Procedure,
-            ProcedureImages = vp.ProcedureImages,
-            MedicinesAssigneds = vp.MedicinesAssigneds,
-        }).ToListAsync();
+            AllowNext = allowNext,
+            Data = procedures
+        };
     }
 
     public async Task<VisitsProcedure?> GetByIdAsync(long id)

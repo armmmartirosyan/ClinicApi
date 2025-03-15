@@ -1,4 +1,5 @@
 ﻿using Clinic.Core.Domain;
+using Clinic.Core.Models.DTO;
 using Clinic.Core.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,9 +15,21 @@ public class MedicinesAssignedRepository(ClinicDbContext dbContext) : IMedicines
         return res.Entity.Id;
     }
 
-    public async Task<List<MedicinesAssigned>> GetAllAsync()
+    public async Task<InfiniteScrollDTO<MedicinesAssigned>> GetAllAsync(int page, int pageSize)
     {
-        return await dbContext.MedicinesAssigneds.ToListAsync();
+        var totalItems = await dbContext.MedicinesAssigneds.CountAsync();
+        var allowNext = (page * pageSize) < totalItems;
+        
+        List<MedicinesAssigned> medicinesAssigned =  await dbContext.MedicinesAssigneds
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+        
+        return new InfiniteScrollDTO<MedicinesAssigned>()
+        {
+            AllowNext = allowNext,
+            Data = medicinesAssigned
+        };
     }
 
     public async Task<MedicinesAssigned?> GetByIdAsync(long id)
