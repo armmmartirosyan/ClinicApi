@@ -93,8 +93,8 @@ public class AuthService
         return await authRepository.GetUserTypeByName(name);
     }
     
-    public async Task<InfiniteScrollDTO<User>> GetDoctors(int page, int pageSize)
+    public async Task<InfiniteScrollDTO<User>> GetDoctors(int page, int pageSize, long userId)
     {
-        return await authRepository.GetDoctors(page, pageSize);
+        return await authRepository.GetDoctors(page, pageSize, userId);
     }
 }

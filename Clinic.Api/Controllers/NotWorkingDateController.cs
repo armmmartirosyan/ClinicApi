@@ -37,7 +37,7 @@ public class NotWorkingDateController(INotWorkingDaysService notWorkingDaysServi
         }
     }
 
-    [Authorize(Roles = "Doctor")]
+    [Authorize(Roles = "Doctor,Patient")]
     [HttpGet("{doctorId}")]
     public async Task<IActionResult> GetByDoctorId(long doctorId)
     {

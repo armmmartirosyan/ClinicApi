@@ -15,5 +15,5 @@ public interface IAuthRepository
     Task<bool> IsDoctorTypeId(int id);
     Task<User> GetUserWithRoleByEmailAsync(string email);
     Task<UserType?> GetUserTypeByName(string name);
-    Task<InfiniteScrollDTO<User>> GetDoctors(int page, int pageSize);
+    Task<InfiniteScrollDTO<User>> GetDoctors(int page, int pageSize, long userId);
 }

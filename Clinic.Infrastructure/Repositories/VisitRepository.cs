@@ -1,5 +1,6 @@
 ﻿using Clinic.Core.Domain;
 using Clinic.Core.Interfaces.Repositories;
+using Clinic.Core.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clinic.Infrastructure.Repositories;
@@ -14,9 +15,27 @@ public class VisitRepository(ClinicDbContext dbContext) : IVisitRepository
         return res.Entity.Id;
     }
 
-    public async Task<List<Visit>> GetAllVisitsAsync()
+    public async Task<List<Visit>> GetAllVisitsAsync(DecodedTokenDTO decodedToken)
     {
-        return await dbContext.Visits.ToListAsync();
+        return await dbContext.Visits
+            .Where(v => decodedToken.Role == "Doctor" ? v.DoctorId == decodedToken.UserId : v.PatientId == decodedToken.UserId)
+            .Join(dbContext.Visits, v => v.Id, v => v.Id, (v, _) => new Visit
+            {
+                Id = v.Id,
+                Notes = v.Notes,
+                CreatedAt = v.CreatedAt,
+                DoctorId = v.DoctorId,
+                PatientId = v.PatientId,
+                StartScheduledDate = v.StartScheduledDate,
+                EndScheduledDate = v.EndScheduledDate,
+                StartActualDate = v.StartActualDate,
+                EndActualDate = v.EndActualDate,
+                StatusId = v.StatusId,
+                VisitsProcedures = v.VisitsProcedures,
+                Doctor = v.Doctor
+            })
+            .ToListAsync();
+        
     }
 
     public async Task<Visit?> GetVisitByIdAsync(long id)

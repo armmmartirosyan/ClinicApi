@@ -2,6 +2,9 @@
 using Clinic.Core.Models.Request;
 using Clinic.Core.Models.Response;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Clinic.Infrastructure.Helpers;
+using Clinic.Core.Models.DTO;
 
 namespace Clinic.Api.Controllers;
 
@@ -33,11 +36,15 @@ public class VisitController(IVisitService visitService) : ControllerBase
             });
         }
     }
-
+    
+    [Authorize(Roles = "Doctor,Patient")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var visits = await visitService.GetAllVisitsAsync();
+        Request.Headers.TryGetValue("Authorization", out var authHeader);
+        DecodedTokenDTO decodedToken = AuthHelper.DecodeToken(authHeader);
+        
+        var visits = await visitService.GetAllVisitsAsync(decodedToken);
         
         return Ok(new Response()
         {

@@ -23,6 +23,22 @@ public class MedicinesAssignedRepository(ClinicDbContext dbContext) : IMedicines
         List<MedicinesAssigned> medicinesAssigned =  await dbContext.MedicinesAssigneds
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
+            .Join(dbContext.MedicinesAssigneds, m => m.Id, m => m.Id, (m, _) => new MedicinesAssigned
+            {
+                Id = m.Id,
+                Notes = m.Notes,
+                DoctorId = m.DoctorId,
+                PatientId = m.PatientId,
+                Doctor = m.Doctor,
+                Patient = m.Patient,
+                Name = m.Name,
+                Dose = m.Dose,
+                StartDate = m.StartDate,
+                DayCount = m.DayCount,
+                Quantity = m.Quantity,
+                VisitProcedureId = m.VisitProcedureId,
+                VisitProcedure = m.VisitProcedure
+            })
             .ToListAsync();
         
         return new InfiniteScrollDTO<MedicinesAssigned>()

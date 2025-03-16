@@ -4,6 +4,7 @@ using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.Request;
 using FluentValidation;
 using FluentValidation.Results;
+using Clinic.Core.Models.DTO;
 
 namespace Clinic.Core.Services;
 
@@ -38,9 +39,9 @@ public class VisitService
         return await visitRepository.AddVisitAsync(visit);
     }
 
-    public async Task<List<Visit>> GetAllVisitsAsync()
+    public async Task<List<Visit>> GetAllVisitsAsync(DecodedTokenDTO decodedToken)
     {
-        return await visitRepository.GetAllVisitsAsync();
+        return await visitRepository.GetAllVisitsAsync(decodedToken);
     }
 
     public async Task<Visit?> GetVisitByIdAsync(long id)

@@ -1,11 +1,12 @@
 ﻿using Clinic.Core.Domain;
+using Clinic.Core.Models.DTO;
 
 namespace Clinic.Core.Interfaces.Repositories;
 
 public interface IVisitRepository
 {
     Task<long> AddVisitAsync(Visit visit);
-    Task<List<Visit>> GetAllVisitsAsync();
+    Task<List<Visit>> GetAllVisitsAsync(DecodedTokenDTO decodedToken);
     Task<Visit?> GetVisitByIdAsync(long id);
     Task<bool> UpdateVisitAsync(Visit visit);
     Task<bool> DeleteVisitAsync(long id);

@@ -9,5 +9,5 @@ public interface IAuthService
     Task<string> SignInAsync(SignInRequest request);
     Task<string> RegisterAsync(RegisterRequest request);
     Task<UserType?> GetUserTypeByName(string name);
-    Task<InfiniteScrollDTO<User>> GetDoctors(int page, int pageSize);
+    Task<InfiniteScrollDTO<User>> GetDoctors(int page, int pageSize, long userId);
 }

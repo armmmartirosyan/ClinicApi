@@ -69,16 +69,17 @@ public async Task<long> AddUserAsync(User user)
         return await dbContext.UserTypes.FirstOrDefaultAsync(ut => ut.Name == name);
     }
     
-    public async Task<InfiniteScrollDTO<User>> GetDoctors(int page, int pageSize)
+    public async Task<InfiniteScrollDTO<User>> GetDoctors(int page, int pageSize, long userId)
     {
         var doctorType = await dbContext.UserTypes.FirstOrDefaultAsync(ut => ut.Name == "Doctor");
         var totalItems = await dbContext.Users.CountAsync();
         bool allowNext = (page * pageSize) < totalItems;
+        
         List<User> doctors = await dbContext.Users
-            .Where(u => u.TypesId == doctorType.Id)
+            .Where(u => u.TypesId == doctorType.Id && u.Id != userId)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Join(dbContext.DoctorsSpecializations, u => u.Id, ds => ds.DoctorId, (u, ds) =>  new User()
+            .Join(dbContext.Users, u => u.Id, ds => ds.Id, (u, _) =>  new User()
             {
                 Id = u.Id,
                 FirstName = u.FirstName,
@@ -91,9 +92,25 @@ public async Task<long> AddUserAsync(User user)
                 Phone = u.Phone,
                 ImageUrl = u.ImageUrl,
                 TypesId = u.TypesId,
-                DoctorsSpecializations = u.DoctorsSpecializations
             })
             .ToListAsync();
+        
+        foreach (var doctor in doctors)
+        {
+            var doctorSpecializations = await dbContext.DoctorsSpecializations
+                .Where(s => s.DoctorId == doctor.Id)
+                .Join(dbContext.DoctorsSpecializations, u => u.DoctorId, ds => ds.DoctorId, (u, _) =>  new DoctorsSpecialization
+                {
+                    DoctorId = doctor.Id,
+                    SpecializationId = u.SpecializationId,
+                    Specialization = u.Specialization
+                })
+                .ToListAsync();
+            
+            Console.Write($"doctorSpecializations: {doctorSpecializations}:");
+
+            doctor.DoctorsSpecializations = doctorSpecializations;
+        }
 
         return new InfiniteScrollDTO<User>()
         {

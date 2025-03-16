@@ -4,6 +4,8 @@ using Clinic.Core.Models.Request;
 using Clinic.Core.Models.Response;
 using Clinic.Core.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Clinic.Infrastructure.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Clinic.Api.Controllers;
 
@@ -86,13 +88,17 @@ public class AuthController(IAuthService authService) : ControllerBase
         }
     }
     
+    [Authorize(Roles = "Doctor,Patient")]
     [HttpGet("{page}")]
     public async Task<IActionResult> Doctors(int page)
     {
         try
         {
-            int pageSize = 1;
-            InfiniteScrollDTO<User> data = await authService.GetDoctors(page, pageSize);
+            int pageSize = 5;
+            Request.Headers.TryGetValue("Authorization", out var authHeader);
+            DecodedTokenDTO decodedToken = AuthHelper.DecodeToken(authHeader);
+            
+            InfiniteScrollDTO<User> data = await authService.GetDoctors(page, pageSize, decodedToken.UserId);
 
             return Ok(new Response()
             {
