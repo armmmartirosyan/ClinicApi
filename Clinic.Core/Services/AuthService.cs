@@ -97,4 +97,26 @@ public class AuthService
     {
         return await authRepository.GetDoctors(page, pageSize, userId);
     }
+    
+    public async Task<User> GetProfileAsync(DecodedTokenDTO decodedToken)
+    {
+        return await authRepository.GetProfileAsync(decodedToken);
+    }
+    
+    public async Task<bool> UpdateProfileAsync(DecodedTokenDTO decodedToken, UpdateProfileRequest request)
+    {
+        var user = await authRepository.GetUserByIdAsync(decodedToken.UserId);
+
+        if (user == null)
+        {
+            return false;
+        }
+
+        user.FirstName = request.FirstName;
+        user.LastName = request.LastName;
+        user.BirthDate = request.BirthDate;
+        user.Phone = request.Phone;
+
+        return await authRepository.UpdateProfileAsync(user);
+    }
 }

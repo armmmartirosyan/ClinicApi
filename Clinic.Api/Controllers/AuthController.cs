@@ -1,4 +1,6 @@
-﻿using Clinic.Core.Domain;
+﻿using System.Reflection;
+using System.Runtime.InteropServices.JavaScript;
+using Clinic.Core.Domain;
 using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.Request;
 using Clinic.Core.Models.Response;
@@ -103,6 +105,64 @@ public class AuthController(IAuthService authService) : ControllerBase
             return Ok(new Response()
             {
                 Data = data,
+                Message = "",
+                Success = true
+            });
+        }
+        catch (InvalidDataException ex)
+        {
+            return BadRequest(new Response()
+            {
+                Data = null,
+                Message = ex.Message,
+                Success = false
+            });
+        }
+    }
+    
+    [Authorize(Roles = "Doctor,Patient")]
+    [HttpGet]
+    public async Task<IActionResult> GetProfile()
+    {
+        try
+        {
+            Request.Headers.TryGetValue("Authorization", out var authHeader);
+            DecodedTokenDTO decodedToken = AuthHelper.DecodeToken(authHeader);
+            
+            var data = await authService.GetProfileAsync(decodedToken);
+
+            return Ok(new Response()
+            {
+                Data = data,
+                Message = "",
+                Success = true
+            });
+        }
+        catch (InvalidDataException ex)
+        {
+            return BadRequest(new Response()
+            {
+                Data = null,
+                Message = ex.Message,
+                Success = false
+            });
+        }
+    }
+    
+    [Authorize(Roles = "Doctor,Patient")]
+    [HttpPut]
+    public async Task<IActionResult> UpdateProfile(UpdateProfileRequest request)
+    {
+        try
+        {
+            Request.Headers.TryGetValue("Authorization", out var authHeader);
+            DecodedTokenDTO decodedToken = AuthHelper.DecodeToken(authHeader);
+            
+            var success = await authService.UpdateProfileAsync(decodedToken, request);
+
+            return Ok(new Response()
+            {
+                Data = success,
                 Message = "",
                 Success = true
             });

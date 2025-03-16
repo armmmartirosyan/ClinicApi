@@ -10,4 +10,6 @@ public interface IAuthService
     Task<string> RegisterAsync(RegisterRequest request);
     Task<UserType?> GetUserTypeByName(string name);
     Task<InfiniteScrollDTO<User>> GetDoctors(int page, int pageSize, long userId);
+    Task<User> GetProfileAsync(DecodedTokenDTO decodedToken);
+    Task<bool> UpdateProfileAsync(DecodedTokenDTO decodedToken, UpdateProfileRequest request);
 }

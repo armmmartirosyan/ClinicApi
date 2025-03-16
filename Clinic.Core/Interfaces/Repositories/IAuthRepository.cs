@@ -16,4 +16,7 @@ public interface IAuthRepository
     Task<User> GetUserWithRoleByEmailAsync(string email);
     Task<UserType?> GetUserTypeByName(string name);
     Task<InfiniteScrollDTO<User>> GetDoctors(int page, int pageSize, long userId);
+    Task<User> GetProfileAsync(DecodedTokenDTO decodedToken);
+    Task<User> GetUserByIdAsync(long id);
+    Task<bool> UpdateProfileAsync(User user);
 }
