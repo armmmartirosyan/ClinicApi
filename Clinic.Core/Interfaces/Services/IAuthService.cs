@@ -12,4 +12,5 @@ public interface IAuthService
     Task<InfiniteScrollDTO<User>> GetDoctors(int page, int pageSize, long userId);
     Task<User> GetProfileAsync(DecodedTokenDTO decodedToken);
     Task<bool> UpdateProfileAsync(DecodedTokenDTO decodedToken, UpdateProfileRequest request);
+    Task<bool> ChangePasswordAsync(DecodedTokenDTO decodedToken, ChangePasswordRequest request);
 }

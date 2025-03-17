@@ -119,4 +119,19 @@ public class AuthService
 
         return await authRepository.UpdateProfileAsync(user);
     }
+    
+    public async Task<bool> ChangePasswordAsync(DecodedTokenDTO decodedToken, ChangePasswordRequest request)
+    {
+        var user = await authRepository.GetUserByIdAsync(decodedToken.UserId);
+        bool isValidPassword = authHelper.VerifyPassword(request.CurrentPassword, user.Password);
+
+        if (user == null || !isValidPassword || request.ConfirmPassword != request.NewPassword)
+        {
+            throw new UnauthorizedAccessException("The password is not valid!");
+        }
+
+        user.Password = authHelper.HashPassword(request.NewPassword);
+
+        return await authRepository.UpdateProfileAsync(user);
+    }
 }

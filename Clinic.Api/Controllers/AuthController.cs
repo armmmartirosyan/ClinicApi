@@ -177,4 +177,33 @@ public class AuthController(IAuthService authService) : ControllerBase
             });
         }
     }
+        
+    [Authorize(Roles = "Doctor,Patient")]
+    [HttpPut]
+    public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
+    {
+        try
+        {
+            Request.Headers.TryGetValue("Authorization", out var authHeader);
+            DecodedTokenDTO decodedToken = AuthHelper.DecodeToken(authHeader);
+            
+            var success = await authService.ChangePasswordAsync(decodedToken, request);
+
+            return Ok(new Response()
+            {
+                Data = success,
+                Message = "",
+                Success = true
+            });
+        }
+        catch (InvalidDataException ex)
+        {
+            return BadRequest(new Response()
+            {
+                Data = null,
+                Message = ex.Message,
+                Success = false
+            });
+        }
+    }
 }
