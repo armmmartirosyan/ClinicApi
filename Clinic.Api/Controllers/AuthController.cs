@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using System.Runtime.InteropServices.JavaScript;
-using Clinic.Core.Domain;
+﻿using Clinic.Core.Domain;
 using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.Request;
 using Clinic.Core.Models.Response;
@@ -193,6 +191,64 @@ public class AuthController(IAuthService authService) : ControllerBase
             {
                 Data = success,
                 Message = "",
+                Success = true
+            });
+        }
+        catch (InvalidDataException ex)
+        {
+            return BadRequest(new Response()
+            {
+                Data = null,
+                Message = ex.Message,
+                Success = false
+            });
+        }
+    }
+    
+    [Authorize(Roles = "Doctor,Patient")]
+    [HttpPost]
+    public async Task<IActionResult> UploadImage([FromForm] UploadProfileImageRequest request)
+    {
+        try
+        {
+            Request.Headers.TryGetValue("Authorization", out var authHeader);
+            DecodedTokenDTO decodedToken = AuthHelper.DecodeToken(authHeader);
+            
+            var path = await authService.UploadProfileImagesAsync(decodedToken.UserId, request);
+
+            return Ok(new Response()
+            {
+                Data = path,
+                Message = "Image uploaded successfully.",
+                Success = true
+            });
+        }
+        catch (InvalidDataException ex)
+        {
+            return BadRequest(new Response()
+            {
+                Data = null,
+                Message = ex.Message,
+                Success = false
+            });
+        }
+    }
+      
+    [Authorize(Roles = "Doctor,Patient")]
+    [HttpDelete]
+    public async Task<IActionResult> DeleteImage()
+    {
+        try
+        {
+            Request.Headers.TryGetValue("Authorization", out var authHeader);
+            DecodedTokenDTO decodedToken = AuthHelper.DecodeToken(authHeader);
+            
+            await authService.DeleteProfileImagesAsync(decodedToken.UserId);
+
+            return Ok(new Response()
+            {
+                Data = true,
+                Message = "Image deleted successfully.",
                 Success = true
             });
         }

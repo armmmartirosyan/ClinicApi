@@ -6,11 +6,13 @@ using Clinic.Core.Models.Request;
 using FluentValidation;
 using FluentValidation.Results;
 using Clinic.Core.Models.DTO;
+using Microsoft.AspNetCore.Http;
 
 namespace Clinic.Core.Services;
  
 public class AuthService
     (
+        IFileHelper fileHelper,
         IAuthHelper authHelper,
         IAuthRepository authRepository, 
         AbstractValidator<RegisterRequest> userValidator
@@ -127,11 +129,74 @@ public class AuthService
 
         if (user == null || !isValidPassword || request.ConfirmPassword != request.NewPassword)
         {
-            throw new UnauthorizedAccessException("The password is not valid!");
+            throw new Exception("The password is not valid!");
         }
 
         user.Password = authHelper.HashPassword(request.NewPassword);
 
         return await authRepository.UpdateProfileAsync(user);
+    }
+    
+    public async Task<string?> UploadProfileImagesAsync(long userId, UploadProfileImageRequest request)
+    {
+        var user = await authRepository.GetUserByIdAsync(userId);
+        
+        if (user == null)
+        {
+            throw new Exception("Couldn't find the user!");
+        }
+
+        if (user.ImageUrl != null)
+        {
+            bool success = await this.DeleteProfileImagesAsync(userId);
+
+            if (!success)
+            {
+                throw new Exception("User has a profile image!");
+            }
+        }
+
+        string uploadedFilePath = await fileHelper.WriteImageAsync(request.Image);
+
+        if (uploadedFilePath == null)
+        {
+            throw new Exception("Invalid image!");
+        }
+        
+        user.ImageUrl = uploadedFilePath;
+
+        await authRepository.UpdateProfileAsync(user);
+
+        return uploadedFilePath;
+    }
+    
+    public async Task<bool> DeleteProfileImagesAsync(long userId)
+    {
+        var user = await authRepository.GetUserByIdAsync(userId);
+
+        if (user == null || user.ImageUrl == null)
+        {
+            throw new InvalidDataException("Failed deleting the image.");
+        }
+
+        var url = user.ImageUrl;
+        
+        user.ImageUrl = null;
+
+        bool success = await authRepository.UpdateProfileAsync(user);
+
+        if (!success)
+        {
+            throw new InvalidDataException("Failed deleting the image.");
+        }
+        
+        bool result = fileHelper.DeleteImage(url);
+
+        if (!result)
+        {
+            throw new InvalidDataException("Failed deleting the image.");
+        }
+        
+        return result;
     }
 }

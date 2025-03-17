@@ -7,7 +7,7 @@ namespace Clinic.Infrastructure.Helpers;
 
 public class FileHelper(AbstractValidator<IFormFile> imageValidator) : IFileHelper
 {
-    public async Task<List<string>> WriteImageAsync(List<IFormFile>? files)
+    public async Task<List<string>> WriteImagesAsync(List<IFormFile>? files)
     {
         if (files == null || !files.Any(file => file.Length > 0))
         {
@@ -39,10 +39,37 @@ public class FileHelper(AbstractValidator<IFormFile> imageValidator) : IFileHelp
 
         return imagePaths;
     }
+    
+    public async Task<string?> WriteImageAsync(IFormFile? file)
+    {
+        if (file == null || file.Length <= 0)
+        {
+            return null;
+        }
+
+        ValidationResult imageValidationRes = imageValidator.Validate(file);
+
+        if (!imageValidationRes.IsValid)
+        {
+            return null;
+        }
+
+        string uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
+        string imageUploadsDir = GetImageUploadsDir();
+        string filePath = Path.Combine(imageUploadsDir, uniqueFileName);
+
+        await using (var fileStream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(fileStream);
+        }
+
+        return uniqueFileName;
+    }
 
     public bool DeleteImage(string url)
     {
-        var path = Path.Combine("Uploads", "Images", url);
+        string imageUploadsDir = GetImageUploadsDir();
+        string path = Path.Combine(imageUploadsDir, url);
 
         try
         {

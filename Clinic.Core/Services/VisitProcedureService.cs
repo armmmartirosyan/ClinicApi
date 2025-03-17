@@ -35,7 +35,7 @@ public class VisitProcedureService
 
         long visitProcedureId = await visitProcedureRepository.AddAsync(visitsProcedure);
 
-        List<string> uploadedFilePaths = await fileHelper.WriteImageAsync(request.Images);
+        List<string> uploadedFilePaths = await fileHelper.WriteImagesAsync(request.Images);
 
         if (uploadedFilePaths.Count > 0)
         {
@@ -126,7 +126,7 @@ public class VisitProcedureService
     {
         await GetByIdAsync(request.VisitProcedureId);
 
-        List<string> uploadedFilePaths = await fileHelper.WriteImageAsync(request.Images);
+        List<string> uploadedFilePaths = await fileHelper.WriteImagesAsync(request.Images);
 
         if (uploadedFilePaths.Count > 0)
         {

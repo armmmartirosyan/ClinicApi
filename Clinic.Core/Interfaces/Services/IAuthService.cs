@@ -13,4 +13,6 @@ public interface IAuthService
     Task<User> GetProfileAsync(DecodedTokenDTO decodedToken);
     Task<bool> UpdateProfileAsync(DecodedTokenDTO decodedToken, UpdateProfileRequest request);
     Task<bool> ChangePasswordAsync(DecodedTokenDTO decodedToken, ChangePasswordRequest request);
+    Task<string?> UploadProfileImagesAsync(long userId, UploadProfileImageRequest request);
+    Task<bool> DeleteProfileImagesAsync(long userId);
 }
