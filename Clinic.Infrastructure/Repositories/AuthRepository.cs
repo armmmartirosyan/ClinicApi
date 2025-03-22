@@ -135,6 +135,7 @@ public async Task<long> AddUserAsync(User user)
                 Phone = u.Phone,
                 ImageUrl = u.ImageUrl,
                 TypesId = u.TypesId,
+                BirthDate = u.BirthDate
             })
             .FirstOrDefaultAsync(u => u.Id == decodedToken.UserId);
 
