@@ -106,8 +106,6 @@ public async Task<long> AddUserAsync(User user)
                     Specialization = u.Specialization
                 })
                 .ToListAsync();
-            
-            Console.Write($"doctorSpecializations: {doctorSpecializations}:");
 
             doctor.DoctorsSpecializations = doctorSpecializations;
         }

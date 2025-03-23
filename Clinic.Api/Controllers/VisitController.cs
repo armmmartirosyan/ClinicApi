@@ -12,12 +12,16 @@ namespace Clinic.Api.Controllers;
 [Route("[controller]/[action]")]
 public class VisitController(IVisitService visitService) : ControllerBase
 {
+    [Authorize(Roles = "Patient")]
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] AddVisitRequest request)
     {
         try
         {
-            var visitId = await visitService.AddVisitAsync(request);
+            Request.Headers.TryGetValue("Authorization", out var authHeader);
+            DecodedTokenDTO decodedToken = AuthHelper.DecodeToken(authHeader);
+            
+            var visitId = await visitService.AddVisitAsync(request, decodedToken.UserId);
 
             return Ok(new Response()
             {
@@ -38,13 +42,13 @@ public class VisitController(IVisitService visitService) : ControllerBase
     }
     
     [Authorize(Roles = "Doctor,Patient")]
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetAll(long id)
     {
         Request.Headers.TryGetValue("Authorization", out var authHeader);
         DecodedTokenDTO decodedToken = AuthHelper.DecodeToken(authHeader);
         
-        var visits = await visitService.GetAllVisitsAsync(decodedToken);
+        var visits = await visitService.GetAllVisitsAsync(decodedToken, id);
         
         return Ok(new Response()
         {
@@ -77,6 +81,7 @@ public class VisitController(IVisitService visitService) : ControllerBase
         });
     }
 
+    [Authorize(Roles = "Doctor,Patient")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(long id, [FromBody] UpdateVisitRequest request)
     {

@@ -15,10 +15,12 @@ public class VisitRepository(ClinicDbContext dbContext) : IVisitRepository
         return res.Entity.Id;
     }
 
-    public async Task<List<Visit>> GetAllVisitsAsync(DecodedTokenDTO decodedToken)
+    public async Task<List<Visit>> GetAllVisitsAsync(DecodedTokenDTO decodedToken, long  doctorId)
     {
         return await dbContext.Visits
-            .Where(v => decodedToken.Role == "Doctor" ? v.DoctorId == decodedToken.UserId : v.PatientId == decodedToken.UserId)
+            .Where(v => decodedToken.Role == "Doctor" ? v.DoctorId == decodedToken.UserId :  
+                (doctorId != 0 && doctorId >= 1) ? v.DoctorId == doctorId : 
+                v.PatientId == decodedToken.UserId)
             .Join(dbContext.Visits, v => v.Id, v => v.Id, (v, _) => new Visit
             {
                 Id = v.Id,
@@ -32,7 +34,9 @@ public class VisitRepository(ClinicDbContext dbContext) : IVisitRepository
                 EndActualDate = v.EndActualDate,
                 StatusId = v.StatusId,
                 VisitsProcedures = v.VisitsProcedures,
-                Doctor = v.Doctor
+                Doctor = v.Doctor,
+                Patient = v.Patient,
+                Status = v.Status
             })
             .ToListAsync();
         

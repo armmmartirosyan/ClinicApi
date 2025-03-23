@@ -6,7 +6,7 @@ namespace Clinic.Core.Interfaces.Repositories;
 public interface IVisitRepository
 {
     Task<long> AddVisitAsync(Visit visit);
-    Task<List<Visit>> GetAllVisitsAsync(DecodedTokenDTO decodedToken);
+    Task<List<Visit>> GetAllVisitsAsync(DecodedTokenDTO decodedToken, long doctorId);
     Task<Visit?> GetVisitByIdAsync(long id);
     Task<bool> UpdateVisitAsync(Visit visit);
     Task<bool> DeleteVisitAsync(long id);

@@ -12,10 +12,6 @@ public class AddVisitValidator : AbstractValidator<AddVisitRequest>
         _visitRepository = visitRepository;
         CascadeMode = CascadeMode.StopOnFirstFailure;
 
-        RuleFor(v => v.PatientId)
-           .NotEmpty().WithMessage("{PropertyName} is required.")
-           .MustAsync(BeAValidUserId).WithMessage("{PropertyName} is invalid.");
-
         RuleFor(v => v.DoctorId)
             .NotEmpty().WithMessage("{PropertyName} is required.")
             .MustAsync(BeAValidDoctorId).WithMessage("{PropertyName} is invalid.");
@@ -33,7 +29,6 @@ public class AddVisitValidator : AbstractValidator<AddVisitRequest>
             .Must(BeAValidDate).WithMessage("{PropertyName} must be a valid date.");
 
         RuleFor(v => v)
-            .Must(v => v.DoctorId != v.PatientId).WithMessage("DoctorId and PatientId cannot be the same.")
             .Must(v => v.StartScheduledDate <= v.EndScheduledDate).WithMessage("End schedule date can't be earlier than start schedule date.");
     }
 

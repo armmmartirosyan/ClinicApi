@@ -15,7 +15,7 @@ public class VisitService
         AbstractValidator<UpdateVisitRequest> updateVisitValidator
     ) : IVisitService
 {
-    public async Task<long> AddVisitAsync(AddVisitRequest request)
+    public async Task<long> AddVisitAsync(AddVisitRequest request, long userId)
     {
         ValidationResult result = addVisitValidator.Validate(request);
 
@@ -28,7 +28,7 @@ public class VisitService
 
         var visit = new Visit
         {
-            PatientId = request.PatientId,
+            PatientId = userId,
             DoctorId = request.DoctorId,
             StartScheduledDate = request.StartScheduledDate,
             EndScheduledDate = request.EndScheduledDate,
@@ -39,9 +39,9 @@ public class VisitService
         return await visitRepository.AddVisitAsync(visit);
     }
 
-    public async Task<List<Visit>> GetAllVisitsAsync(DecodedTokenDTO decodedToken)
+    public async Task<List<Visit>> GetAllVisitsAsync(DecodedTokenDTO decodedToken, long doctorId)
     {
-        return await visitRepository.GetAllVisitsAsync(decodedToken);
+        return await visitRepository.GetAllVisitsAsync(decodedToken, doctorId);
     }
 
     public async Task<Visit?> GetVisitByIdAsync(long id)
