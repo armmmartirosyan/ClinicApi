@@ -17,7 +17,7 @@ public class VisitRepository(ClinicDbContext dbContext) : IVisitRepository
 
     public async Task<List<Visit>> GetAllVisitsAsync(DecodedTokenDTO decodedToken, long  doctorId)
     {
-        return await dbContext.Visits
+        var  visits =  await dbContext.Visits
             .Where(v => decodedToken.Role == "Doctor" ? v.DoctorId == decodedToken.UserId :  
                 (doctorId != 0 && doctorId >= 1) ? v.DoctorId == doctorId : 
                 v.PatientId == decodedToken.UserId)
@@ -39,7 +39,30 @@ public class VisitRepository(ClinicDbContext dbContext) : IVisitRepository
                 Status = v.Status
             })
             .ToListAsync();
+
+        /*foreach (var visit in visits)
+        {
+            var visitProcedures = await dbContext
+                .VisitsProcedures
+                .Where(vp => vp.VisitId == visit.Id)
+                .Join(dbContext.VisitsProcedures, vp => vp.Id, vp => vp.Id, (vp, _) => new VisitsProcedure
+                {
+                    Id = vp.Id,
+                    Notes = vp.Notes,
+                    VisitId = vp.VisitId,
+                    CreatedAt = vp.CreatedAt,
+                    ProcedureId = vp.ProcedureId,
+                    //Visit = vp.Visit,
+                    Procedure = vp.Procedure,
+                    //ProcedureImages = vp.ProcedureImages,
+                    //MedicinesAssigneds = vp.MedicinesAssigneds,
+                })
+                .ToListAsync();
+
+            visit.VisitsProcedures = visitProcedures;
+        }*/
         
+        return visits;
     }
 
     public async Task<Visit?> GetVisitByIdAsync(long id)
