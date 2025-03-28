@@ -54,17 +54,17 @@ public class VisitProcedureRepository(ClinicDbContext dbContext) : IVisitProcedu
     public async Task<VisitsProcedure?> GetByIdAsync(long id)
     {
         return await dbContext.VisitsProcedures.Join(dbContext.VisitsProcedures, vp => vp.Id, vp => vp.Id, (vp, _) => new VisitsProcedure
-        {
-            Id = vp.Id,
-            Notes = vp.Notes,
-            VisitId = vp.VisitId,
-            CreatedAt = vp.CreatedAt,
-            ProcedureId = vp.ProcedureId,
-            Visit = vp.Visit,
-            Procedure = vp.Procedure,
-            ProcedureImages = vp.ProcedureImages,
-            MedicinesAssigneds = vp.MedicinesAssigneds,
-        }).FirstAsync(s => s.Id == id);
+            {
+                Id = vp.Id,
+                Notes = vp.Notes,
+                VisitId = vp.VisitId,
+                CreatedAt = vp.CreatedAt,
+                ProcedureId = vp.ProcedureId,
+                Visit = vp.Visit,
+                Procedure = vp.Procedure,
+                ProcedureImages = vp.ProcedureImages,
+                MedicinesAssigneds = vp.MedicinesAssigneds,
+            }).FirstAsync(s => s.Id == id);
     }
 
     public async Task<List<ProcedureImage>> GetImagesByVisitProcedureIdAsync(long id)
@@ -91,6 +91,19 @@ public class VisitProcedureRepository(ClinicDbContext dbContext) : IVisitProcedu
         dbContext.ProcedureImages.RemoveRange(procedureImages);
         dbContext.VisitsProcedures.Remove(visitProcedure);
         return await dbContext.SaveChangesAsync() > 0;
+    }
+    
+    public async Task<bool> DeleteMedicinesAsync(long id)
+    {
+        var medicines = await dbContext.MedicinesAssigneds.Where(p => p.VisitProcedureId == id).ToListAsync();
+
+        if (medicines.Count > 0)
+        {
+            dbContext.MedicinesAssigneds.RemoveRange(medicines);
+            return await dbContext.SaveChangesAsync() > 0;
+        }
+
+        return true;
     }
 
     public async Task<bool> DeleteImageByUrlAsync(string url)

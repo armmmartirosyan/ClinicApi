@@ -93,9 +93,10 @@ public class VisitProcedureService
     {
         var procedureImages = await visitProcedureRepository.GetImagesByVisitProcedureIdAsync(id);
 
+        bool medicinesSuccess = await visitProcedureRepository.DeleteMedicinesAsync(id);
         bool success = await visitProcedureRepository.DeleteAsync(id);
 
-        if (!success)
+        if (!success ||  !medicinesSuccess)
         { 
             throw new InvalidDataException("Failed deleting the visit procedure.");
         }
