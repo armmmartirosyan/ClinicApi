@@ -3,6 +3,8 @@ using Clinic.Core.Models.Request;
 using Clinic.Core.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Clinic.Core.Models.DTO;
+using Clinic.Infrastructure.Helpers;
 
 namespace Clinic.Api.Controllers;
 
@@ -10,6 +12,7 @@ namespace Clinic.Api.Controllers;
 [Route("[controller]/[action]")]
 public class MedicinesAssignedController(IMedicinesAssignedService medicinesAssignedService) : ControllerBase
 {
+    [Authorize(Roles = "Doctor")]
     [HttpPost]
     public async Task<IActionResult> Add(AddMedicinesAssignedRequest request)
     {
@@ -35,11 +38,15 @@ public class MedicinesAssignedController(IMedicinesAssignedService medicinesAssi
         }
     }
 
+    [Authorize(Roles = "Doctor,Patient")]
     [HttpGet("{page}")]
     public async Task<IActionResult> GetAll(int page)
     {
+        Request.Headers.TryGetValue("Authorization", out var authHeader);
+        DecodedTokenDTO decodedToken = AuthHelper.DecodeToken(authHeader);
+        
         var pageSize = 5;
-        var data = await medicinesAssignedService.GetAllAsync(page, pageSize);
+        var data = await medicinesAssignedService.GetAllAsync(page, pageSize, decodedToken);
 
         return Ok(new Response()
         {

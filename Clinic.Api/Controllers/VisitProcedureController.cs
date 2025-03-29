@@ -1,9 +1,10 @@
-﻿using Clinic.Core.Domain;
-using Clinic.Core.Interfaces.Services;
+﻿using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.Request;
 using Clinic.Core.Models.Response;
 using Clinic.Core.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Clinic.Infrastructure.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Clinic.Api.Controllers;
 
@@ -61,11 +62,14 @@ public class VisitProcedureController(IVisitProcedureService visitProcedureServi
         }
     }
 
+    [Authorize(Roles = "Doctor,Patient")]
     [HttpGet("{page}")]
     public async Task<IActionResult> GetAll(int page)
     {
         int pageSize = 5;
-        var data = await visitProcedureService.GetAllAsync(page, pageSize);
+        Request.Headers.TryGetValue("Authorization", out var authHeader);
+        DecodedTokenDTO decodedToken = AuthHelper.DecodeToken(authHeader);
+        var data = await visitProcedureService.GetAllAsync(page, pageSize, decodedToken);
 
         return Ok(new Response()
         {

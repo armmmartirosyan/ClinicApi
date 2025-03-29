@@ -22,12 +22,16 @@ public class VisitProcedureRepository(ClinicDbContext dbContext) : IVisitProcedu
         return await dbContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<InfiniteScrollDTO<VisitsProcedure>> GetAllAsync(int page, int pageSize)
+    public async Task<InfiniteScrollDTO<VisitsProcedure>> GetAllAsync(int page, int pageSize, DecodedTokenDTO decodedToken)
     {
-        var totalItems = await dbContext.VisitsProcedures.CountAsync();
+        var totalItems = await dbContext
+            .VisitsProcedures
+            .Where(m => decodedToken.UserId == (decodedToken.Role == "Doctor" ? m.Visit.DoctorId : m.Visit.PatientId))
+            .CountAsync();
         var allowNext = (page * pageSize) < totalItems;
         
         List<VisitsProcedure> procedures = await dbContext.VisitsProcedures
+            .Where(m => decodedToken.UserId == (decodedToken.Role == "Doctor" ? m.Visit.DoctorId : m.Visit.PatientId))
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Join(dbContext.VisitsProcedures, vp => vp.Id, vp => vp.Id, (vp, _) => new VisitsProcedure

@@ -15,12 +15,15 @@ public class MedicinesAssignedRepository(ClinicDbContext dbContext) : IMedicines
         return res.Entity.Id;
     }
 
-    public async Task<InfiniteScrollDTO<MedicinesAssigned>> GetAllAsync(int page, int pageSize)
+    public async Task<InfiniteScrollDTO<MedicinesAssigned>> GetAllAsync(int page, int pageSize, DecodedTokenDTO decodedToken)
     {
-        var totalItems = await dbContext.MedicinesAssigneds.CountAsync();
+        var totalItems = await dbContext.MedicinesAssigneds
+            .Where(m => decodedToken.UserId == (decodedToken.Role == "Doctor" ? m.DoctorId : m.PatientId))
+            .CountAsync();
         var allowNext = (page * pageSize) < totalItems;
         
         List<MedicinesAssigned> medicinesAssigned =  await dbContext.MedicinesAssigneds
+            .Where(m => decodedToken.UserId == (decodedToken.Role == "Doctor" ? m.DoctorId : m.PatientId))
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Join(dbContext.MedicinesAssigneds, m => m.Id, m => m.Id, (m, _) => new MedicinesAssigned

@@ -8,7 +8,7 @@ public interface IMedicinesAssignedService
 {
     Task<long> AddAsync(AddMedicinesAssignedRequest request);
     Task<MedicinesAssigned> GetByIdAsync(long id);
-    Task<InfiniteScrollDTO<MedicinesAssigned>> GetAllAsync(int page, int pageSize);
+    Task<InfiniteScrollDTO<MedicinesAssigned>> GetAllAsync(int page, int pageSize, DecodedTokenDTO decodedToken);
     Task<bool> UpdateAsync(long id, UpdateMedicinesAssignedRequest request);
     Task<bool> DeleteAsync(long id);
 }

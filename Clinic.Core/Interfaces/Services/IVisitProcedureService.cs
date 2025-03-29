@@ -8,7 +8,7 @@ public interface IVisitProcedureService
 {
     Task<long> AddAsync(AddVisitProcedureRequest request);
     Task<VisitsProcedure> GetByIdAsync(long id);
-    Task<InfiniteScrollDTO<VisitsProcedure>> GetAllAsync(int page, int pageSize);
+    Task<InfiniteScrollDTO<VisitsProcedure>> GetAllAsync(int page, int pageSize, DecodedTokenDTO decodedToken);
     Task<bool> UpdateAsync(long id, UpdateVisitProcedureRequest request);
     Task<bool> DeleteAsync(long id);
     Task<bool> DeleteImageByUrlAsync(string url);

@@ -68,9 +68,9 @@ public class VisitProcedureService
         return visitProcedure;
     }
 
-    public async Task<InfiniteScrollDTO<VisitsProcedure>> GetAllAsync(int page, int pageSize)
+    public async Task<InfiniteScrollDTO<VisitsProcedure>> GetAllAsync(int page, int pageSize, DecodedTokenDTO decodedToken)
     {
-        return await visitProcedureRepository.GetAllAsync(page, pageSize);
+        return await visitProcedureRepository.GetAllAsync(page, pageSize, decodedToken);
     }
 
     public async Task<bool> UpdateAsync(long id, UpdateVisitProcedureRequest request)

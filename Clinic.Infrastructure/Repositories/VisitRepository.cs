@@ -19,7 +19,7 @@ public class VisitRepository(ClinicDbContext dbContext) : IVisitRepository
     {
         var  visits =  await dbContext.Visits
             .Where(v => decodedToken.Role == "Doctor" ? v.DoctorId == decodedToken.UserId :  
-                (doctorId != 0 && doctorId >= 1) ? v.DoctorId == doctorId : 
+                doctorId >= 1 ? v.DoctorId == doctorId : 
                 v.PatientId == decodedToken.UserId)
             .Join(dbContext.Visits, v => v.Id, v => v.Id, (v, _) => new Visit
             {

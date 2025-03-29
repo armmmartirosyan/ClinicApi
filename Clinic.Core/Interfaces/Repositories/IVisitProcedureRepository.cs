@@ -6,7 +6,7 @@ namespace Clinic.Core.Interfaces.Repositories;
 public interface IVisitProcedureRepository
 {
     Task<long> AddAsync(VisitsProcedure visitProcedure);
-    Task<InfiniteScrollDTO<VisitsProcedure>> GetAllAsync(int page, int pageSize);
+    Task<InfiniteScrollDTO<VisitsProcedure>> GetAllAsync(int page, int pageSize, DecodedTokenDTO decodedToken);
     Task<VisitsProcedure?> GetByIdAsync(long id);
     Task<bool> UpdateAsync(VisitsProcedure visitProcedure);
     Task<bool> DeleteAsync(long id);
