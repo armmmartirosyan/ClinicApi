@@ -63,7 +63,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<AbstractValidator<CreateWeekDayScheduleRequest>, CreateWeekDayScheduleValidator>()
             .AddScoped<AbstractValidator<UpdateWeekDayScheduleRequest>, UpdateWeekDayScheduleValidator>()
 
-            .AddScoped<AbstractValidator<CreateNotWorkingDayRequest>, CreateNotWorkingDayValidator>()
+            .AddScoped<AbstractValidator<CreateNotWorkingDayRequestValidator>, CreateNotWorkingDayValidator>()
             .AddScoped<AbstractValidator<UpdateNotWorkingDateValidateDTO>, UpdateNotWorkingDayValidator>()
 
             .AddScoped<AbstractValidator<AddProcedureRequest>, AddProcedureValidator>()

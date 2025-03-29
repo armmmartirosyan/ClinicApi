@@ -1,8 +1,8 @@
 ﻿using Clinic.Core.Interfaces.Services;
 using Clinic.Core.Models.Request;
 using Clinic.Core.Models.Response;
-//using Clinic.Infrastructure.Helpers;
-//using Clinic.Core.Models.DTO;
+using Clinic.Infrastructure.Helpers;
+using Clinic.Core.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,12 +12,16 @@ namespace Clinic.Api.Controllers;
 [Route("[controller]/[action]")]
 public class NotWorkingDateController(INotWorkingDaysService notWorkingDaysService) : ControllerBase
 {
+    [Authorize(Roles = "Doctor")]
     [HttpPost]
     public async Task<IActionResult> Create(CreateNotWorkingDayRequest request)
     {
         try
         {
-            long id = await notWorkingDaysService.CreateAsync(request);
+            Request.Headers.TryGetValue("Authorization", out var authHeader);
+            DecodedTokenDTO decodedToken = AuthHelper.DecodeToken(authHeader);
+            
+            long id = await notWorkingDaysService.CreateAsync(request, decodedToken.UserId);
 
             return Ok(new Response()
             {
@@ -38,13 +42,13 @@ public class NotWorkingDateController(INotWorkingDaysService notWorkingDaysServi
     }
 
     [Authorize(Roles = "Doctor,Patient")]
-    [HttpGet("{doctorId}")]
-    public async Task<IActionResult> GetByDoctorId(long doctorId)
+    [HttpGet]
+    public async Task<IActionResult> GetByDoctorId()
     {
-        //Request.Headers.TryGetValue("Authorization", out var authHeader);
-        //DecodedTokenDTO decodedToken = AuthHelper.DecodeToken(authHeader);
+        Request.Headers.TryGetValue("Authorization", out var authHeader);
+        DecodedTokenDTO decodedToken = AuthHelper.DecodeToken(authHeader);
 
-        var notWorkingDays = await notWorkingDaysService.GetByDoctorIdAsync(doctorId);
+        var notWorkingDays = await notWorkingDaysService.GetByDoctorIdAsync(decodedToken.UserId);
 
         return Ok(new Response()
         {
@@ -54,7 +58,7 @@ public class NotWorkingDateController(INotWorkingDaysService notWorkingDaysServi
         });
     }
 
-    [Authorize(Roles = "Patient")]
+    [Authorize(Roles = "Doctor,Patient")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(long id)
     {
@@ -105,6 +109,7 @@ public class NotWorkingDateController(INotWorkingDaysService notWorkingDaysServi
         }
     }
 
+    [Authorize(Roles = "Doctor")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(long id)
     {

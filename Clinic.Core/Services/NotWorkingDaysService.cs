@@ -11,13 +11,17 @@ namespace Clinic.Core.Services;
 public class NotWorkingDaysService
     (
         INotWorkingDaysRepository notWorkingDaysRepository,
-        AbstractValidator<CreateNotWorkingDayRequest> createNotWorkingDateValidator,
+        AbstractValidator<CreateNotWorkingDayRequestValidator> createNotWorkingDateValidator,
         AbstractValidator<UpdateNotWorkingDateValidateDTO> updateNotWorkingDateValidator
     ) : INotWorkingDaysService
 {
-    public async Task<long> CreateAsync(CreateNotWorkingDayRequest request)
+    public async Task<long> CreateAsync(CreateNotWorkingDayRequest request, long doctorId)
     {
-        ValidationResult validationResult = createNotWorkingDateValidator.Validate(request);
+        ValidationResult validationResult = createNotWorkingDateValidator.Validate(new CreateNotWorkingDayRequestValidator()
+        {
+            DoctorId = doctorId,
+            NotWorkDate = request.NotWorkDate
+        });
 
         if (!validationResult.IsValid)
         {
@@ -27,7 +31,7 @@ public class NotWorkingDaysService
         var notWorkingDay = new NotWorkingDay
         {
             NotWorkDate = request.NotWorkDate,
-            DoctorId = request.DoctorId,
+            DoctorId = doctorId,
         };
 
         return await notWorkingDaysRepository.CreateAsync(notWorkingDay);

@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace Clinic.Infrastructure.Validators;
 
-public class CreateNotWorkingDayValidator : AbstractValidator<CreateNotWorkingDayRequest>
+public class CreateNotWorkingDayValidator : AbstractValidator<CreateNotWorkingDayRequestValidator>
 {
     private readonly INotWorkingDaysRepository _notWorkingDaysRepository;
     public CreateNotWorkingDayValidator(INotWorkingDaysRepository notWorkingDaysRepository)
@@ -41,7 +41,7 @@ public class CreateNotWorkingDayValidator : AbstractValidator<CreateNotWorkingDa
         return await _notWorkingDaysRepository.IsValidDoctorIdAsync(doctorId);
     }
 
-    private async Task<bool> DateNotBeRegisteredAlready(CreateNotWorkingDayRequest request, CancellationToken cancellationToken)
+    private async Task<bool> DateNotBeRegisteredAlready(CreateNotWorkingDayRequestValidator request, CancellationToken cancellationToken)
     {
         return await _notWorkingDaysRepository.DateNotRegisteredAlready(request.DoctorId, request.NotWorkDate);
     }

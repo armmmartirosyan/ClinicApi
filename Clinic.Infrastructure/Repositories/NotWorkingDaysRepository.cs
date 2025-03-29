@@ -17,7 +17,10 @@ public class NotWorkingDaysRepository(ClinicDbContext dbContext) : INotWorkingDa
 
     public async Task<IEnumerable<NotWorkingDay>> GetByDoctorIdAsync(long doctorId)
     {
-        return await dbContext.NotWorkingDays.Where(s => s.DoctorId == doctorId).ToListAsync();
+        return await dbContext.NotWorkingDays
+            .Where(s => s.DoctorId == doctorId)
+            .OrderByDescending(s => s.NotWorkDate)
+            .ToListAsync();
     }
 
     public async Task<NotWorkingDay> GetByIdAsync(long id)
