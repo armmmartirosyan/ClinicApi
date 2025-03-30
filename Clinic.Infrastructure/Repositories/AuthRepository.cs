@@ -92,7 +92,9 @@ public async Task<long> AddUserAsync(User user)
                 Phone = u.Phone,
                 ImageUrl = u.ImageUrl,
                 TypesId = u.TypesId,
-                BirthDate = u.BirthDate
+                BirthDate = u.BirthDate,
+                ClinicId = u.ClinicId,
+                Clinic = u.Clinic
             })
             .ToListAsync();
         
@@ -134,7 +136,9 @@ public async Task<long> AddUserAsync(User user)
                 Phone = u.Phone,
                 ImageUrl = u.ImageUrl,
                 TypesId = u.TypesId,
-                BirthDate = u.BirthDate
+                BirthDate = u.BirthDate,
+                ClinicId = u.ClinicId,
+                Clinic = u.Clinic
             })
             .FirstOrDefaultAsync(u => u.Id == decodedToken.UserId);
 

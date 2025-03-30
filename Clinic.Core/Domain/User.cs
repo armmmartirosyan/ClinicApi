@@ -26,7 +26,11 @@ public partial class User
     public DateTime? CreatedAt { get; set; }
 
     public int TypesId { get; set; }
-
+    
+    public long? ClinicId { get; set; }
+    
+    public virtual Clinic? Clinic { get; set; }
+    
     public virtual ICollection<MedicinesAssigned> MedicinesAssignedDoctors { get; set; } = new List<MedicinesAssigned>();
 
     public virtual ICollection<MedicinesAssigned> MedicinesAssignedPatients { get; set; } = new List<MedicinesAssigned>();

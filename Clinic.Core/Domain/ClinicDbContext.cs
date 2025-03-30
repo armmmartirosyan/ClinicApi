@@ -16,6 +16,8 @@ public partial class ClinicDbContext : DbContext
     {
     }
 
+    public virtual DbSet<Clinic> Clinics { get; set; }
+    
     public virtual DbSet<MedicinesAssigned> MedicinesAssigneds { get; set; }
 
     public virtual DbSet<NotWorkingDay> NotWorkingDays { get; set; }
@@ -47,6 +49,21 @@ public partial class ClinicDbContext : DbContext
         modelBuilder
             .UseCollation("utf8mb4_0900_ai_ci")
             .HasCharSet("utf8mb4");
+        
+        modelBuilder.Entity<Clinic>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("clinics");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Address)
+                .HasMaxLength(255)
+                .HasColumnName("address");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
+        });
 
         modelBuilder.Entity<MedicinesAssigned>(entity =>
         {
@@ -166,6 +183,8 @@ public partial class ClinicDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.ToTable("users");
+            
+            entity.HasIndex(e => e.ClinicId, "clinic_id");
 
             entity.HasIndex(e => e.Email, "email").IsUnique();
 
@@ -175,6 +194,7 @@ public partial class ClinicDbContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.BirthDate).HasColumnName("birth_date");
+            entity.Property(e => e.ClinicId).HasColumnName("clinic_id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp")
@@ -201,6 +221,10 @@ public partial class ClinicDbContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("phone");
             entity.Property(e => e.TypesId).HasColumnName("types_id");
+            
+            entity.HasOne(d => d.Clinic).WithMany(p => p.Users)
+                .HasForeignKey(d => d.ClinicId)
+                .HasConstraintName("FK_users_clinic");
 
             entity.HasOne(d => d.Types).WithMany(p => p.Users)
                 .HasForeignKey(d => d.TypesId)
