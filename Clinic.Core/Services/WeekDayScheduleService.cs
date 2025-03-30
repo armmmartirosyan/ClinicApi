@@ -1,6 +1,7 @@
 ﻿using Clinic.Core.Domain;
 using Clinic.Core.Interfaces.Repositories;
 using Clinic.Core.Interfaces.Services;
+using Clinic.Core.Models.DTO;
 using Clinic.Core.Models.Request;
 using FluentValidation;
 using FluentValidation.Results;
@@ -14,7 +15,7 @@ public class WeekDayScheduleService
         AbstractValidator<UpdateWeekDayScheduleRequest> updateWeekDayScheduleValidator
     ) : IWeekDayScheduleService
 {
-    public async Task<long> CreateAsync(CreateWeekDayScheduleRequest request)
+    public async Task<long> CreateAsync(CreateWeekDayScheduleRequest request, long doctorId)
     {
         ValidationResult validationResult = createWeekDayScheduleValidator.Validate(request);
 
@@ -29,7 +30,7 @@ public class WeekDayScheduleService
             EndTime = request.EndTime,
             BreakStartTime = request.BreakStartTime,
             BreakEndTime = request.BreakEndTime,
-            DoctorId = request.DoctorId,
+            DoctorId = doctorId,
             WeekDayId = request.WeekDayId
         };
 

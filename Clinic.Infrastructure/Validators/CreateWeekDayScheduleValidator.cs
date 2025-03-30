@@ -31,13 +31,6 @@ public class CreateWeekDayScheduleValidator : AbstractValidator<CreateWeekDaySch
         RuleFor(x => x.WeekDayId)
             .NotEmpty().WithMessage("The {PropertyName} is required.")
             .MustAsync(BeAValidWeekDayIdAsync).WithMessage("Invalid Week day Id");
-
-        RuleFor(x => x)
-            .MustAsync(WeekDayNotDuplicated).WithMessage("There is already registered day schedule.");
-
-        RuleFor(x => x.DoctorId)
-            .NotEmpty().WithMessage("The {PropertyName} is required.")
-            .MustAsync(BeAValidUserIdAsync).WithMessage("Invalid Doctor Id");
     }
 
     private async Task<bool> BeAValidUserIdAsync(long doctorId, CancellationToken cancellationToken)
@@ -50,8 +43,4 @@ public class CreateWeekDayScheduleValidator : AbstractValidator<CreateWeekDaySch
         return await _weekDayScheduleRepository.IsValidWeekDayIdAsync(weekDayId);
     }
 
-    private async Task<bool> WeekDayNotDuplicated(CreateWeekDayScheduleRequest req, CancellationToken cancellationToken)
-    {
-        return await _weekDayScheduleRepository.WeekDayNotRegistered(req.WeekDayId, req.DoctorId);
-    }
 }

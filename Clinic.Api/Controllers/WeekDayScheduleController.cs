@@ -1,6 +1,9 @@
 ﻿using Clinic.Core.Interfaces.Services;
+using Clinic.Core.Models.DTO;
 using Clinic.Core.Models.Request;
 using Clinic.Core.Models.Response;
+using Clinic.Infrastructure.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic.Api.Controllers;
@@ -9,12 +12,16 @@ namespace Clinic.Api.Controllers;
 [Route("[controller]/[action]")]
 public class WeekDayScheduleController(IWeekDayScheduleService weekDayScheduleService) : ControllerBase
 {
+    [Authorize(Roles = "Doctor")]
     [HttpPost]
     public async Task<IActionResult> Create(CreateWeekDayScheduleRequest request)
     {
         try
         {
-            long weekDayScheduleId = await weekDayScheduleService.CreateAsync(request);
+            Request.Headers.TryGetValue("Authorization", out var authHeader);
+            DecodedTokenDTO decodedToken = AuthHelper.DecodeToken(authHeader);
+            
+            long weekDayScheduleId = await weekDayScheduleService.CreateAsync(request, decodedToken.UserId);
 
             return Ok(new Response()
             {
